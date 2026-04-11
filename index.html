@@ -1,404 +1,644 @@
 <!DOCTYPE html>
 
-<html lang="zh">
+<html lang="th">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>龍嘉銘</title>
+<title>DIY Touchless Faucet – Circuit Schematic</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&display=swap');
+  :root {
+    --bg: #0a0e1a;
+    --panel: #0d1425;
+    --grid: #1a2340;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff14;
+    --yellow: #ffd700;
+    --red: #ff2d55;
+    --blue: #1e90ff;
+    --black-wire: #333;
+    --glow: 0 0 8px currentColor;
+    --font-mono: 'Share Tech Mono', monospace;
+    --font-display: 'Orbitron', sans-serif;
+    --font-body: 'Sarabun', sans-serif;
+  }
 
-- { margin: 0; padding: 0; box-sizing: border-box; }
+- { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-background: #f9f3e8;
-display: flex;
-justify-content: center;
-align-items: center;
+background: var(–bg);
+color: #c8d8f0;
+font-family: var(–font-body);
 min-height: 100vh;
-font-family: ‘Noto Serif TC’, serif;
+overflow-x: hidden;
 }
 
-.artwork {
-width: 900px;
-height: 340px;
-background: #fff;
-box-shadow: 0 8px 40px rgba(0,0,0,0.18);
-display: flex;
-position: relative;
-overflow: hidden;
-border: 3px solid #c8a84b;
-outline: 6px solid #f9f3e8;
-outline-offset: 3px;
-}
-
-.panel {
-flex: 1;
-position: relative;
-display: flex;
-align-items: center;
-justify-content: center;
-overflow: hidden;
-}
-
-.panel:not(:last-child) {
-border-right: 2px solid #e8d9b0;
-}
-
-/* Character */
-.char {
-font-size: 130px;
-font-weight: 900;
-position: relative;
-z-index: 10;
-line-height: 1;
-color: transparent;
--webkit-text-stroke: 2px rgba(60,20,10,0.85);
-text-shadow: 4px 4px 0px rgba(180,40,20,0.15);
-filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
-animation: floatChar 4s ease-in-out infinite;
-}
-
-@keyframes floatChar {
-0%, 100% { transform: translateY(0px); }
-50% { transform: translateY(-6px); }
-}
-
-/* Panel 1 - 龍 - Eagle/Phoenix + Sun + Mountains */
-.panel-1 { background: linear-gradient(160deg, #fff8ee 0%, #fce8d0 60%, #e8f5e8 100%); }
-.panel-1 .char { -webkit-text-stroke: 2.5px #8B1A1A; color: rgba(180,40,20,0.08); }
-
-/* Panel 2 - 嘉 - Crane + Lanterns */
-.panel-2 { background: linear-gradient(160deg, #f0f8ff 0%, #fff0f0 50%, #f0fff0 100%); }
-.panel-2 .char { -webkit-text-stroke: 2.5px #1a5c1a; color: rgba(20,100,20,0.08); }
-
-/* Panel 3 - 銘 - Lotus + Fish + Water */
-.panel-3 { background: linear-gradient(160deg, #fff5f8 0%, #e8f8ff 60%, #fff8e8 100%); }
-.panel-3 .char { -webkit-text-stroke: 2.5px #1a3a8B; color: rgba(20,60,180,0.08); }
-
-/* SVG decorations */
-.deco {
-position: absolute;
-top: 0; left: 0;
-width: 100%; height: 100%;
+/* Animated grid background */
+body::before {
+content: ‘’;
+position: fixed; inset: 0;
+background-image:
+linear-gradient(var(–grid) 1px, transparent 1px),
+linear-gradient(90deg, var(–grid) 1px, transparent 1px);
+background-size: 40px 40px;
+opacity: 0.4;
 pointer-events: none;
+z-index: 0;
 }
 
-/* Floating petals animation */
-.petal {
-animation: drift 6s ease-in-out infinite;
+.page { position: relative; z-index: 1; padding: 24px 16px 48px; max-width: 900px; margin: 0 auto; }
+
+/* Header */
+header {
+text-align: center;
+margin-bottom: 32px;
+animation: fadeDown 0.8s ease both;
 }
-@keyframes drift {
-0%, 100% { transform: translate(0,0) rotate(0deg); opacity:0.7; }
-33% { transform: translate(4px,-8px) rotate(15deg); opacity:1; }
-66% { transform: translate(-3px,-4px) rotate(-10deg); opacity:0.8; }
+header h1 {
+font-family: var(–font-display);
+font-size: clamp(1.1rem, 4vw, 1.8rem);
+font-weight: 900;
+color: var(–accent);
+text-shadow: 0 0 20px var(–accent);
+letter-spacing: 2px;
+text-transform: uppercase;
+}
+header p {
+font-family: var(–font-mono);
+font-size: 0.78rem;
+color: #556;
+margin-top: 6px;
+letter-spacing: 3px;
+}
+.badge {
+display: inline-block;
+background: linear-gradient(135deg, #ff6b35, #ff2d55);
+color: #fff;
+font-family: var(–font-display);
+font-size: 0.6rem;
+letter-spacing: 2px;
+padding: 3px 10px;
+border-radius: 2px;
+margin-top: 8px;
+text-transform: uppercase;
 }
 
-.crane-wing {
-animation: flap 2.5s ease-in-out infinite;
-transform-origin: center;
+/* Schematic SVG container */
+.schematic-wrap {
+background: var(–panel);
+border: 1px solid #1e2e50;
+border-radius: 6px;
+padding: 16px;
+margin-bottom: 28px;
+box-shadow: 0 0 40px rgba(0,229,255,0.05);
+animation: fadeUp 0.9s ease both 0.2s;
+overflow-x: auto;
 }
-@keyframes flap {
-0%, 100% { transform: scaleY(1); }
-50% { transform: scaleY(0.75); }
+.schematic-title {
+font-family: var(–font-mono);
+font-size: 0.65rem;
+color: #334;
+letter-spacing: 3px;
+text-transform: uppercase;
+margin-bottom: 12px;
 }
 
-/* Red seal bottom right */
-.seal {
-position: absolute;
-bottom: 12px;
-right: 14px;
-width: 44px;
-height: 44px;
-background: #c0392b;
+svg { display: block; width: 100%; height: auto; }
+
+/* Steps */
+.steps { display: flex; flex-direction: column; gap: 14px; animation: fadeUp 1s ease both 0.4s; }
+
+.step {
+background: var(–panel);
+border: 1px solid #1e2e50;
+border-left: 3px solid var(–accent);
 border-radius: 4px;
+padding: 14px 16px;
+display: flex;
+gap: 14px;
+align-items: flex-start;
+transition: border-color 0.2s, box-shadow 0.2s;
+}
+.step:hover { border-left-color: var(–accent2); box-shadow: 0 0 20px rgba(255,107,53,0.1); }
+.step:nth-child(2) { border-left-color: #ffd700; }
+.step:nth-child(3) { border-left-color: var(–accent3); }
+.step:nth-child(4) { border-left-color: var(–accent); }
+.step:nth-child(5) { border-left-color: var(–accent2); }
+.step:nth-child(6) { border-left-color: #ff2d55; }
+.step:nth-child(7) { border-left-color: #c084fc; }
+
+.step-num {
+font-family: var(–font-display);
+font-size: 1.3rem;
+font-weight: 900;
+color: var(–accent);
+min-width: 36px;
+line-height: 1;
+margin-top: 2px;
+}
+.step:nth-child(2) .step-num { color: #ffd700; }
+.step:nth-child(3) .step-num { color: var(–accent3); }
+.step:nth-child(5) .step-num { color: var(–accent2); }
+.step:nth-child(6) .step-num { color: #ff2d55; }
+.step:nth-child(7) .step-num { color: #c084fc; }
+
+.step-body h3 {
+font-family: var(–font-display);
+font-size: 0.7rem;
+letter-spacing: 1.5px;
+color: #9ab;
+text-transform: uppercase;
+margin-bottom: 6px;
+}
+.step-body p, .step-body li {
+font-size: 0.88rem;
+line-height: 1.7;
+color: #a0b4cc;
+}
+.step-body ul { padding-left: 16px; }
+.step-body code {
+font-family: var(–font-mono);
+background: #0a1020;
+border: 1px solid #1e3060;
+color: var(–accent);
+padding: 1px 6px;
+border-radius: 3px;
+font-size: 0.8rem;
+}
+
+/* BOM table */
+.bom-wrap {
+background: var(–panel);
+border: 1px solid #1e2e50;
+border-radius: 4px;
+overflow: hidden;
+margin-bottom: 28px;
+animation: fadeUp 1s ease both 0.3s;
+}
+.bom-header {
+background: #0a1228;
+font-family: var(–font-display);
+font-size: 0.65rem;
+letter-spacing: 3px;
+color: var(–accent);
+padding: 10px 16px;
+text-transform: uppercase;
+}
+table { width: 100%; border-collapse: collapse; }
+th {
+font-family: var(–font-mono);
+font-size: 0.7rem;
+color: #556;
+letter-spacing: 2px;
+text-transform: uppercase;
+padding: 8px 12px;
+text-align: left;
+border-bottom: 1px solid #1e2e50;
+}
+td {
+font-size: 0.84rem;
+padding: 8px 12px;
+border-bottom: 1px solid #111a2e;
+color: #9ab;
+}
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #0d1730; color: #c8d8f0; }
+.qty { color: var(–accent); font-family: var(–font-mono); font-weight: bold; }
+.spec { color: #ffd700; font-family: var(–font-mono); font-size: 0.78rem; }
+
+/* Warning */
+.warning {
+background: #1a0a0a;
+border: 1px solid #ff2d5540;
+border-left: 3px solid #ff2d55;
+border-radius: 4px;
+padding: 14px 16px;
+margin-top: 28px;
+animation: fadeUp 1s ease both 0.6s;
+}
+.warning-title {
+font-family: var(–font-display);
+font-size: 0.65rem;
+color: #ff2d55;
+letter-spacing: 2px;
+text-transform: uppercase;
+margin-bottom: 8px;
+}
+.warning p { font-size: 0.84rem; color: #c06; line-height: 1.7; color: #e08; }
+
+/* flow diagram */
+.flow {
 display: flex;
 align-items: center;
-justify-content: center;
-color: #fff;
-font-size: 11px;
-font-weight: 900;
-letter-spacing: 1px;
-z-index: 20;
-box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-writing-mode: vertical-rl;
-text-orientation: mixed;
-line-height: 1;
-padding: 2px;
+flex-wrap: wrap;
+gap: 4px;
+margin-top: 10px;
 }
+.flow-box {
+background: #0a1228;
+border: 1px solid var(–accent);
+color: var(–accent);
+font-family: var(–font-mono);
+font-size: 0.7rem;
+padding: 4px 10px;
+border-radius: 3px;
+white-space: nowrap;
+box-shadow: 0 0 8px rgba(0,229,255,0.15);
+}
+.flow-arrow { color: #334; font-size: 0.9rem; }
+
+@keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:none; } }
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+
+/* Wire pulse animation in SVG */
+.wire-pulse { stroke-dasharray: 8 6; animation: dash 1.5s linear infinite; }
+@keyframes dash { to { stroke-dashoffset: -28; } }
+.wire-pulse2 { stroke-dasharray: 8 6; animation: dash2 1.8s linear infinite; }
+@keyframes dash2 { to { stroke-dashoffset: -28; } }
 </style>
 
 </head>
 <body>
-<div class="artwork">
+<div class="page">
 
-  <!-- PANEL 1: 龍 with Phoenix + Sun + Mountains -->
+  <!-- Header -->
 
-  <div class="panel panel-1">
-    <svg class="deco" viewBox="0 0 300 340">
-      <!-- Mountains background -->
-      <ellipse cx="60" cy="280" rx="70" ry="90" fill="#d4e8c2" opacity="0.5"/>
-      <ellipse cx="240" cy="300" rx="50" ry="70" fill="#b8d4a0" opacity="0.4"/>
-      <ellipse cx="150" cy="310" rx="40" ry="55" fill="#2d6a2d" opacity="0.25"/>
+  <header>
+    <h1>🚿 Touchless Sensor Faucet</h1>
+    <p>// DIY Circuit Schematic & Assembly Guide //</p>
+    <div class="badge">Dk Electric World</div>
+  </header>
+
+  <!-- Circuit Signal Flow -->
+
+  <div class="schematic-wrap">
+    <div class="schematic-title">// Signal Flow Diagram</div>
+    <div class="flow">
+      <div class="flow-box">220V AC</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">SMPS</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">+5V / +12V</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">TCR T5000</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">LM393P</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">2N2222</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">RELAY 5V</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">Solenoid 12V</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-box">💧 น้ำไหล</div>
+    </div>
+  </div>
+
+  <!-- SVG Schematic -->
+
+  <div class="schematic-wrap">
+    <div class="schematic-title">// Wiring Schematic</div>
+    <svg viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow-cyan">
+          <feGaussianBlur stdDeviation="2.5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="glow-yellow">
+          <feGaussianBlur stdDeviation="2" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <marker id="arr" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#00e5ff" opacity="0.7"/>
+        </marker>
+      </defs>
 
 ```
-  <!-- Sun top left -->
-  <circle cx="50" cy="55" r="22" fill="#e74c3c" opacity="0.9"/>
-  <circle cx="50" cy="55" r="16" fill="#f39c12" opacity="0.85"/>
-  <!-- Sun rays -->
-  <g stroke="#e74c3c" stroke-width="2" opacity="0.6">
-    <line x1="50" y1="25" x2="50" y2="18"/>
-    <line x1="72" y1="35" x2="78" y2="30"/>
-    <line x1="80" y1="55" x2="88" y2="55"/>
-    <line x1="72" y1="75" x2="78" y2="80"/>
-    <line x1="28" y1="35" x2="22" y2="30"/>
-    <line x1="20" y1="55" x2="12" y2="55"/>
-  </g>
+  <!-- Background panels -->
+  <rect x="10" y="10" width="780" height="500" rx="6" fill="#0d1425" stroke="#1e2e50" stroke-width="1"/>
 
-  <!-- Birds flying near sun -->
-  <path d="M70 30 Q75 25 80 30" stroke="#333" stroke-width="1.5" fill="none"/>
-  <path d="M85 22 Q90 17 95 22" stroke="#333" stroke-width="1.5" fill="none"/>
-  <path d="M100 32 Q105 27 110 32" stroke="#333" stroke-width="1.5" fill="none"/>
+  <!-- ===== SMPS Block ===== -->
+  <rect x="30" y="30" width="130" height="80" rx="4" fill="#0a1228" stroke="#1e90ff" stroke-width="1.5"/>
+  <text x="95" y="52" text-anchor="middle" font-family="'Orbitron',sans-serif" font-size="8" fill="#1e90ff" font-weight="700">SMPS</text>
+  <text x="95" y="66" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="7" fill="#556">220V AC → DC</text>
+  <text x="55" y="82" font-family="'Share Tech Mono',monospace" font-size="7.5" fill="#ff2d55">+12V</text>
+  <text x="55" y="96" font-family="'Share Tech Mono',monospace" font-size="7.5" fill="#39ff14">+5V</text>
+  <text x="55" y="108" font-family="'Share Tech Mono',monospace" font-size="7.5" fill="#556">GND</text>
+  <!-- output dots -->
+  <circle cx="160" cy="80" r="3" fill="#ff2d55" filter="url(#glow-cyan)"/>
+  <circle cx="160" cy="94" r="3" fill="#39ff14" filter="url(#glow-cyan)"/>
+  <circle cx="160" cy="108" r="3" fill="#444"/>
 
-  <!-- Phoenix/Eagle - large red bird -->
-  <g transform="translate(30, 130)">
-    <!-- Body -->
-    <ellipse cx="80" cy="60" rx="28" ry="18" fill="#c0392b" opacity="0.9"/>
-    <!-- Head -->
-    <circle cx="112" cy="48" r="12" fill="#c0392b"/>
-    <circle cx="118" cy="43" r="5" fill="#e74c3c"/>
-    <!-- Beak -->
-    <path d="M124 44 L134 42 L124 48 Z" fill="#f39c12"/>
-    <!-- Eye -->
-    <circle cx="120" cy="44" r="2.5" fill="#1a1a1a"/>
-    <circle cx="121" cy="43" r="1" fill="#fff"/>
-    <!-- Tail feathers -->
-    <path d="M52 65 Q20 90 5 120" stroke="#c0392b" stroke-width="5" fill="none" stroke-linecap="round"/>
-    <path d="M55 68 Q15 100 8 135" stroke="#e74c3c" stroke-width="4" fill="none" stroke-linecap="round"/>
-    <path d="M50 62 Q10 80 0 110" stroke="#922b21" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <!-- Wings -->
-    <path d="M80 45 Q100 15 130 25 Q110 40 95 48" fill="#c0392b" opacity="0.85" class="crane-wing"/>
-    <path d="M80 68 Q95 85 115 80 Q100 65 90 62" fill="#922b21" opacity="0.7"/>
-  </g>
+  <!-- ===== +12V rail (red) ===== -->
+  <polyline points="160,80 760,80" fill="none" stroke="#ff2d55" stroke-width="2" class="wire-pulse" opacity="0.7"/>
+  <text x="220" y="75" font-family="'Share Tech Mono',monospace" font-size="8" fill="#ff2d55">+12V RAIL</text>
 
-  <!-- Red flowers bottom -->
-  <g transform="translate(160, 200)">
-    <circle cx="30" cy="40" r="18" fill="#e74c3c" opacity="0.85"/>
-    <circle cx="30" cy="40" r="10" fill="#f39c12" opacity="0.7"/>
-    <!-- Petals -->
-    <ellipse cx="30" cy="22" rx="7" ry="12" fill="#e74c3c" opacity="0.7" class="petal"/>
-    <ellipse cx="48" cy="32" rx="12" ry="7" fill="#e74c3c" opacity="0.7" class="petal" style="animation-delay:0.5s"/>
-    <ellipse cx="12" cy="32" rx="12" ry="7" fill="#e74c3c" opacity="0.7" class="petal" style="animation-delay:1s"/>
-    <ellipse cx="48" cy="52" rx="12" ry="7" fill="#c0392b" opacity="0.7"/>
-    <ellipse cx="12" cy="52" rx="12" ry="7" fill="#c0392b" opacity="0.7"/>
-  </g>
+  <!-- ===== +5V rail (green) ===== -->
+  <polyline points="160,94 760,94" fill="none" stroke="#39ff14" stroke-width="2" class="wire-pulse2" opacity="0.6"/>
+  <text x="370" y="89" font-family="'Share Tech Mono',monospace" font-size="8" fill="#39ff14">+5V RAIL</text>
 
-  <!-- Green leaves -->
-  <path d="M190 280 Q210 240 230 220 Q225 250 200 290" fill="#27ae60" opacity="0.7"/>
-  <path d="M180 290 Q200 250 215 225 Q200 255 185 295" fill="#2ecc71" opacity="0.6"/>
-  <path d="M160 275 Q170 245 200 240 Q185 260 165 285" fill="#1e8449" opacity="0.65"/>
+  <!-- ===== GND rail ===== -->
+  <polyline points="160,108 760,108" fill="none" stroke="#556" stroke-width="1.5"/>
+  <text x="550" y="103" font-family="'Share Tech Mono',monospace" font-size="8" fill="#445">GND</text>
 
-  <!-- Blue accent bottom -->
-  <path d="M100 330 Q150 310 200 330" stroke="#3498db" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <!-- ===== TCR T5000 SENSOR ===== -->
+  <rect x="30" y="200" width="110" height="70" rx="4" fill="#0a1228" stroke="#ffd700" stroke-width="1.5"/>
+  <text x="85" y="220" text-anchor="middle" font-family="'Orbitron',sans-serif" font-size="7" fill="#ffd700" font-weight="700">TCR T5000</text>
+  <text x="85" y="232" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#556">IR SENSOR</text>
+  <!-- pins -->
+  <text x="38" y="248" font-family="'Share Tech Mono',monospace" font-size="7" fill="#39ff14">VCC</text>
+  <text x="38" y="262" font-family="'Share Tech Mono',monospace" font-size="7" fill="#556">GND</text>
+  <text x="38" y="276" font-family="'Share Tech Mono',monospace" font-size="7" fill="#00e5ff">OUT</text>
+  <circle cx="140" cy="246" r="3" fill="#39ff14"/>
+  <circle cx="140" cy="260" r="3" fill="#444"/>
+  <circle cx="140" cy="274" r="3" fill="#00e5ff"/>
+  <!-- VCC wire up to 5V rail -->
+  <polyline points="140,246 140,94" fill="none" stroke="#39ff14" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <!-- GND wire -->
+  <polyline points="140,260 140,108" fill="none" stroke="#556" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <!-- IR beam indicator -->
+  <ellipse cx="25" cy="255" rx="8" ry="14" fill="none" stroke="#ffd700" stroke-width="1" stroke-dasharray="3,2" opacity="0.5"/>
+  <text x="14" y="275" font-family="'Share Tech Mono',monospace" font-size="5.5" fill="#ffd700">IR</text>
+
+  <!-- ===== LM393P ===== -->
+  <rect x="250" y="160" width="150" height="130" rx="4" fill="#0a1228" stroke="#00e5ff" stroke-width="1.5"/>
+  <text x="325" y="182" text-anchor="middle" font-family="'Orbitron',sans-serif" font-size="8" fill="#00e5ff" font-weight="700">LM393P</text>
+  <text x="325" y="194" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#334">COMPARATOR</text>
+  <!-- Pin labels left -->
+  <text x="256" y="214" font-family="'Share Tech Mono',monospace" font-size="7" fill="#00e5ff">IN+ (P3)</text>
+  <text x="256" y="232" font-family="'Share Tech Mono',monospace" font-size="7" fill="#ffd700">IN− (P2)</text>
+  <text x="256" y="250" font-family="'Share Tech Mono',monospace" font-size="7" fill="#39ff14">VCC (P8)</text>
+  <text x="256" y="268" font-family="'Share Tech Mono',monospace" font-size="7" fill="#556">GND (P4)</text>
+  <!-- Pin labels right -->
+  <text x="340" y="214" font-family="'Share Tech Mono',monospace" font-size="7" fill="#ff6b35">OUT (P1)</text>
+  <!-- pin circles left -->
+  <circle cx="250" cy="211" r="3" fill="#00e5ff"/>
+  <circle cx="250" cy="229" r="3" fill="#ffd700"/>
+  <circle cx="250" cy="247" r="3" fill="#39ff14"/>
+  <circle cx="250" cy="265" r="3" fill="#444"/>
+  <!-- pin circles right -->
+  <circle cx="400" cy="211" r="3" fill="#ff6b35"/>
+
+  <!-- OUT of Sensor → IN+ of LM393 -->
+  <polyline points="140,274 200,274 200,211 250,211" fill="none" stroke="#00e5ff" stroke-width="1.8"/>
+
+  <!-- +5V → VCC of LM393 -->
+  <polyline points="250,247 230,247 230,94" fill="none" stroke="#39ff14" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+  <!-- GND of LM393 -->
+  <polyline points="250,265 235,265 235,108" fill="none" stroke="#556" stroke-width="1.2" stroke-dasharray="4,3"/>
+
+  <!-- ===== VR-10K ===== -->
+  <rect x="440" y="160" width="80" height="55" rx="4" fill="#0a1228" stroke="#ffd700" stroke-width="1.5"/>
+  <text x="480" y="180" text-anchor="middle" font-family="'Orbitron',sans-serif" font-size="7" fill="#ffd700" font-weight="700">VR-10K</text>
+  <text x="480" y="193" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#556">POTENTIOMETER</text>
+  <text x="448" y="210" font-family="'Share Tech Mono',monospace" font-size="7" fill="#ffd700">WIPER</text>
+  <circle cx="438" cy="207" r="3" fill="#ffd700"/>
+  <!-- Wiper → IN− of LM393 -->
+  <polyline points="438,207 420,207 420,229 400,229" fill="none" stroke="#ffd700" stroke-width="1.8"/>
+  <!-- VCC side of VR -->
+  <polyline points="480,160 480,94" fill="none" stroke="#39ff14" stroke-width="1.2" stroke-dasharray="3,3"/>
+  <!-- GND side of VR -->
+  <polyline points="520,160 520,108" fill="none" stroke="#556" stroke-width="1.2" stroke-dasharray="3,3"/>
+
+  <!-- ===== R-220Ω (between LM393 out and Base area) ===== -->
+  <!-- Resistor symbol horizontal -->
+  <line x1="400" y1="211" x2="430" y2="211" stroke="#ff6b35" stroke-width="1.8"/>
+  <rect x="430" y="205" width="36" height="12" rx="2" fill="#0a1228" stroke="#ff6b35" stroke-width="1.5"/>
+  <text x="448" y="214" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#ff6b35">220Ω</text>
+  <line x1="466" y1="211" x2="490" y2="211" stroke="#ff6b35" stroke-width="1.8"/>
+
+  <!-- ===== R-1K ===== -->
+  <line x1="490" y1="211" x2="510" y2="211" stroke="#ff6b35" stroke-width="1.8"/>
+  <rect x="510" y="205" width="30" height="12" rx="2" fill="#0a1228" stroke="#ff6b35" stroke-width="1.5"/>
+  <text x="525" y="214" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#ff6b35">1KΩ</text>
+  <line x1="540" y1="211" x2="560" y2="211" stroke="#ff6b35" stroke-width="1.8"/>
+  <text x="446" y="200" font-family="'Share Tech Mono',monospace" font-size="6" fill="#556">R-220Ω</text>
+  <text x="512" y="200" font-family="'Share Tech Mono',monospace" font-size="6" fill="#556">R-1K</text>
+
+  <!-- ===== 2N2222 Transistor ===== -->
+  <rect x="560" y="180" width="90" height="90" rx="4" fill="#0a1228" stroke="#ff6b35" stroke-width="1.5"/>
+  <text x="605" y="202" text-anchor="middle" font-family="'Orbitron',sans-serif" font-size="7" fill="#ff6b35" font-weight="700">2N2222</text>
+  <text x="605" y="214" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#334">NPN BJT</text>
+  <!-- transistor symbol simplified -->
+  <line x1="590" y1="225" x2="590" y2="260" stroke="#ff6b35" stroke-width="2"/>
+  <line x1="560" y1="235" x2="590" y2="235" stroke="#ff6b35" stroke-width="1.8"/> <!-- Base -->
+  <line x1="590" y1="235" x2="640" y2="220" stroke="#ff6b35" stroke-width="1.8"/> <!-- Collector -->
+  <line x1="590" y1="245" x2="640" y2="260" stroke="#ff6b35" stroke-width="1.8"/> <!-- Emitter -->
+  <!-- Arrow emitter -->
+  <polygon points="625,255 640,260 630,248" fill="#ff6b35"/>
+  <text x="568" y="248" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#ff6b35">B</text>
+  <text x="642" y="216" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#ff6b35">C</text>
+  <text x="642" y="265" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#556">E→GND</text>
+  <!-- Base wire from R-1K -->
+  <line x1="560" y1="211" x2="560" y2="235" stroke="#ff6b35" stroke-width="1.8"/>
+  <!-- Emitter to GND -->
+  <polyline points="640,260 660,260 660,108" fill="none" stroke="#556" stroke-width="1.2" stroke-dasharray="4,3"/>
+
+  <!-- ===== RELAY 5V ===== -->
+  <rect x="560" y="310" width="140" height="90" rx="4" fill="#0a1228" stroke="#c084fc" stroke-width="1.5"/>
+  <text x="630" y="330" text-anchor="middle" font-family="'Orbitron',sans-serif" font-size="8" fill="#c084fc" font-weight="700">RELAY 5V</text>
+  <text x="630" y="344" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#334">SRD-5VDC-SL-C</text>
+  <text x="568" y="362" font-family="'Share Tech Mono',monospace" font-size="7" fill="#39ff14">COIL+</text>
+  <text x="568" y="378" font-family="'Share Tech Mono',monospace" font-size="7" fill="#556">COIL−</text>
+  <text x="635" y="362" font-family="'Share Tech Mono',monospace" font-size="7" fill="#ff2d55">COM</text>
+  <text x="635" y="378" font-family="'Share Tech Mono',monospace" font-size="7" fill="#ffd700">NO</text>
+  <text x="635" y="394" font-family="'Share Tech Mono',monospace" font-size="7" fill="#556">NC</text>
+  <!-- Coil pins -->
+  <circle cx="560" cy="359" r="3" fill="#39ff14"/>
+  <circle cx="560" cy="375" r="3" fill="#444"/>
+  <!-- contact pins -->
+  <circle cx="700" cy="359" r="3" fill="#ff2d55"/>
+  <circle cx="700" cy="375" r="3" fill="#ffd700"/>
+  <circle cx="700" cy="391" r="3" fill="#444"/>
+  <!-- Collector → Coil− (top of relay) -->
+  <polyline points="640,220 640,280 560,280 560,359" fill="none" stroke="#c084fc" stroke-width="1.8"/>
+  <!-- Coil+ → +5V -->
+  <polyline points="560,375 545,375 545,108" fill="none" stroke="#39ff14" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <!-- COM ← +12V rail -->
+  <polyline points="700,80 700,359" fill="none" stroke="#ff2d55" stroke-width="2" opacity="0.8"/>
+
+  <!-- Diode 1N4007 across coil -->
+  <rect x="530" y="340" width="24" height="30" rx="2" fill="#0a1228" stroke="#c084fc" stroke-width="1" opacity="0.7"/>
+  <text x="542" y="352" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5" fill="#c084fc">1N</text>
+  <text x="542" y="363" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="5" fill="#c084fc">4007</text>
+
+  <!-- ===== Solenoid Valve ===== -->
+  <rect x="560" y="430" width="140" height="60" rx="4" fill="#0a1228" stroke="#1e90ff" stroke-width="1.5"/>
+  <text x="630" y="452" text-anchor="middle" font-family="'Orbitron',sans-serif" font-size="7.5" fill="#1e90ff" font-weight="700">SOLENOID</text>
+  <text x="630" y="465" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="6.5" fill="#334">12V DC VALVE</text>
+  <text x="568" y="484" font-family="'Share Tech Mono',monospace" font-size="7" fill="#ffd700">IN (NO)</text>
+  <text x="648" y="484" font-family="'Share Tech Mono',monospace" font-size="7" fill="#556">GND</text>
+  <circle cx="560" cy="481" r="3" fill="#ffd700"/>
+  <circle cx="700" cy="481" r="3" fill="#444"/>
+  <!-- NO → Solenoid IN -->
+  <polyline points="700,375 720,375 720,481 700,481" fill="none" stroke="#ffd700" stroke-width="2" class="wire-pulse" opacity="0.8"/>
+  <!-- Solenoid GND -->
+  <polyline points="700,481 740,481 740,108" fill="none" stroke="#556" stroke-width="1.2" stroke-dasharray="4,3"/>
+
+  <!-- Water flow indicator -->
+  <text x="620" y="506" text-anchor="middle" font-family="'Share Tech Mono',monospace" font-size="9" fill="#1e90ff">💧 น้ำไหล</text>
+
+  <!-- Legend -->
+  <rect x="30" y="430" width="200" height="60" rx="4" fill="#080e1c" stroke="#1e2e50" stroke-width="1"/>
+  <text x="42" y="446" font-family="'Orbitron',monospace" font-size="6.5" fill="#556" letter-spacing="2">LEGEND</text>
+  <line x1="42" y1="455" x2="70" y2="455" stroke="#ff2d55" stroke-width="2"/>
+  <text x="75" y="458" font-family="'Share Tech Mono',monospace" font-size="7" fill="#9ab">+12V Rail</text>
+  <line x1="42" y1="468" x2="70" y2="468" stroke="#39ff14" stroke-width="2"/>
+  <text x="75" y="471" font-family="'Share Tech Mono',monospace" font-size="7" fill="#9ab">+5V Rail</text>
+  <line x1="42" y1="481" x2="70" y2="481" stroke="#556" stroke-width="1.5"/>
+  <text x="75" y="484" font-family="'Share Tech Mono',monospace" font-size="7" fill="#9ab">GND</text>
+  <line x1="130" y1="455" x2="158" y2="455" stroke="#00e5ff" stroke-width="2"/>
+  <text x="163" y="458" font-family="'Share Tech Mono',monospace" font-size="7" fill="#9ab">Signal</text>
+  <line x1="130" y1="468" x2="158" y2="468" stroke="#ffd700" stroke-width="2" stroke-dasharray="4,3"/>
+  <text x="163" y="471" font-family="'Share Tech Mono',monospace" font-size="7" fill="#9ab">Power feed</text>
+  <line x1="130" y1="481" x2="158" y2="481" stroke="#c084fc" stroke-width="2"/>
+  <text x="163" y="484" font-family="'Share Tech Mono',monospace" font-size="7" fill="#9ab">Control</text>
+
+  <!-- Title watermark -->
+  <text x="400" y="145" text-anchor="middle" font-family="'Orbitron',sans-serif" font-size="10" fill="#0d1a30" font-weight="900" letter-spacing="8">SCHEMATIC v1.0</text>
 </svg>
-<span class="char">龍</span>
 ```
 
   </div>
 
-  <!-- PANEL 2: 嘉 with Crane + Red Lanterns + Flowers -->
+  <!-- BOM -->
 
-  <div class="panel panel-2">
-    <svg class="deco" viewBox="0 0 300 340">
-      <!-- Background mountain hint -->
-      <ellipse cx="150" cy="320" rx="120" ry="50" fill="#c8e6c9" opacity="0.3"/>
+  <div class="bom-wrap">
+    <div class="bom-header">📦 Bill of Materials (BOM) — รายการอุปกรณ์</div>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>อุปกรณ์</th><th>สเปค</th><th>จำนวน</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Dual SMPS</td><td class="spec">AC220V → DC 5V+12V</td><td class="qty">×1</td></tr>
+        <tr><td>2</td><td>LM393P IC</td><td class="spec">Voltage Comparator DIP-8</td><td class="qty">×1</td></tr>
+        <tr><td>3</td><td>TCR T5000</td><td class="spec">IR Proximity Sensor</td><td class="qty">×1</td></tr>
+        <tr><td>4</td><td>2N2222</td><td class="spec">NPN Transistor TO-92</td><td class="qty">×1</td></tr>
+        <tr><td>5</td><td>Relay</td><td class="spec">5V SRD-5VDC-SL-C</td><td class="qty">×1</td></tr>
+        <tr><td>6</td><td>Solenoid Valve</td><td class="spec">12V DC ขนาด 1/2"</td><td class="qty">×1</td></tr>
+        <tr><td>7</td><td>VR-10K</td><td class="spec">Potentiometer 10KΩ</td><td class="qty">×1</td></tr>
+        <tr><td>8</td><td>R-220Ω</td><td class="spec">Resistor 220Ω 1/4W</td><td class="qty">×2</td></tr>
+        <tr><td>9</td><td>R-1K</td><td class="spec">Resistor 1KΩ 1/4W</td><td class="qty">×1</td></tr>
+        <tr><td>10</td><td>1N4007 Diode</td><td class="spec">Flyback Protection</td><td class="qty">×1</td></tr>
+        <tr><td>11</td><td>สายไฟ</td><td class="spec">แดง/เหลือง/เขียว/ดำ AWG22</td><td class="qty">ตามยาว</td></tr>
+        <tr><td>12</td><td>PCB / Breadboard</td><td class="spec">Universal PCB</td><td class="qty">×1</td></tr>
+        <tr><td>13</td><td>กล่องกันน้ำ</td><td class="spec">IP55 ขึ้นไป</td><td class="qty">×1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Steps -->
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-body">
+        <h3>ติดตั้ง SMPS และตรวจแรงดัน</h3>
+        <ul>
+          <li>ต่อ <code>L, N, GND</code> ของ 220V AC เข้า Input SMPS</li>
+          <li>วัดด้วยมัลติมิเตอร์ที่ขา Output → ต้องได้ <code>+5V</code> และ <code>+12V</code></li>
+          <li>ต่อ <code>GND</code> ของทั้งสองชุดให้ร่วมกัน (Common Ground)</li>
+        </ul>
+      </div>
+    </div>
 
 ```
-  <!-- Hanging Lanterns -->
-  <g transform="translate(30, 60)">
-    <!-- Lantern cord -->
-    <line x1="50" y1="0" x2="50" y2="15" stroke="#8B4513" stroke-width="2"/>
-    <!-- Lantern body -->
-    <rect x="28" y="15" width="44" height="70" rx="22" fill="#e74c3c" opacity="0.92"/>
-    <!-- Lantern ribs -->
-    <line x1="28" y1="35" x2="72" y2="35" stroke="#c0392b" stroke-width="1.5" opacity="0.6"/>
-    <line x1="28" y1="50" x2="72" y2="50" stroke="#c0392b" stroke-width="1.5" opacity="0.6"/>
-    <line x1="28" y1="65" x2="72" y2="65" stroke="#c0392b" stroke-width="1.5" opacity="0.6"/>
-    <!-- Lantern top/bottom caps -->
-    <rect x="32" y="12" width="36" height="8" rx="3" fill="#c0392b"/>
-    <rect x="32" y="82" width="36" height="8" rx="3" fill="#c0392b"/>
-    <!-- 福 character -->
-    <text x="50" y="60" text-anchor="middle" font-size="28" font-weight="bold" fill="#f39c12" font-family="serif">福</text>
-    <!-- Tassel -->
-    <line x1="40" y1="90" x2="38" y2="115" stroke="#f39c12" stroke-width="1.5"/>
-    <line x1="50" y1="90" x2="50" y2="118" stroke="#f39c12" stroke-width="1.5"/>
-    <line x1="60" y1="90" x2="62" y2="115" stroke="#f39c12" stroke-width="1.5"/>
-  </g>
+<div class="step">
+  <div class="step-num">02</div>
+  <div class="step-body">
+    <h3>ต่อ TCR T5000 IR Sensor</h3>
+    <ul>
+      <li>ขา <code>VCC → +5V</code></li>
+      <li>ขา <code>GND → GND</code></li>
+      <li>ขา <code>OUT → Pin 3 (IN+) ของ LM393</code></li>
+      <li>ติด Sensor ใต้ก๊อก หันหน้าลงด้านล่างรับมือผู้ใช้</li>
+    </ul>
+  </div>
+</div>
 
-  <!-- Second lantern -->
-  <g transform="translate(175, 50)">
-    <line x1="50" y1="0" x2="50" y2="15" stroke="#8B4513" stroke-width="2"/>
-    <rect x="28" y="15" width="44" height="70" rx="22" fill="#c0392b" opacity="0.9"/>
-    <line x1="28" y1="35" x2="72" y2="35" stroke="#922b21" stroke-width="1.5" opacity="0.6"/>
-    <line x1="28" y1="50" x2="72" y2="50" stroke="#922b21" stroke-width="1.5" opacity="0.6"/>
-    <line x1="28" y1="65" x2="72" y2="65" stroke="#922b21" stroke-width="1.5" opacity="0.6"/>
-    <rect x="32" y="12" width="36" height="8" rx="3" fill="#922b21"/>
-    <rect x="32" y="82" width="36" height="8" rx="3" fill="#922b21"/>
-    <text x="50" y="60" text-anchor="middle" font-size="28" font-weight="bold" fill="#f39c12" font-family="serif">嘉</text>
-    <line x1="40" y1="90" x2="38" y2="115" stroke="#e74c3c" stroke-width="1.5"/>
-    <line x1="50" y1="90" x2="50" y2="118" stroke="#e74c3c" stroke-width="1.5"/>
-    <line x1="60" y1="90" x2="62" y2="115" stroke="#e74c3c" stroke-width="1.5"/>
-  </g>
+<div class="step">
+  <div class="step-num">03</div>
+  <div class="step-body">
+    <h3>ต่อวงจร LM393P Comparator</h3>
+    <ul>
+      <li><code>Pin 8 (VCC) → +5V</code></li>
+      <li><code>Pin 4 (GND) → GND</code></li>
+      <li><code>Pin 3 (IN+) ← OUT ของ Sensor</code></li>
+      <li><code>Pin 2 (IN−) ← ขา Wiper ของ VR-10K</code></li>
+      <li><code>Pin 1 (OUT) → R-220Ω → R-1K → Base ของ 2N2222</code></li>
+      <li>VR-10K: ขาสองข้างต่อระหว่าง <code>+5V ↔ GND</code></li>
+    </ul>
+  </div>
+</div>
 
-  <!-- Crane standing tall -->
-  <g transform="translate(120, 40)">
-    <!-- Long neck -->
-    <path d="M30 120 Q35 80 45 50 Q50 35 55 20" stroke="#e0e0e0" stroke-width="8" fill="none" stroke-linecap="round"/>
-    <path d="M30 120 Q35 80 45 50 Q50 35 55 20" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
-    <!-- Head -->
-    <circle cx="57" cy="16" r="9" fill="#f0f0f0"/>
-    <!-- Red cap -->
-    <ellipse cx="57" cy="9" rx="7" ry="5" fill="#e74c3c"/>
-    <!-- Beak -->
-    <path d="M66 16 L82 14 L66 20 Z" fill="#d4a017"/>
-    <!-- Eye -->
-    <circle cx="63" cy="15" r="2" fill="#1a1a1a"/>
-    <!-- Body -->
-    <ellipse cx="25" cy="140" rx="22" ry="28" fill="#f5f5f5"/>
-    <!-- Black wing tips -->
-    <path d="M5 130 Q-15 160 -5 175 Q10 155 20 145" fill="#1a1a1a" opacity="0.8" class="crane-wing"/>
-    <path d="M45 130 Q65 160 55 175 Q40 155 30 145" fill="#2c3e50" opacity="0.7" class="crane-wing" style="animation-delay:0.3s"/>
-    <!-- Legs -->
-    <line x1="18" y1="168" x2="15" y2="200" stroke="#c8a87a" stroke-width="3"/>
-    <line x1="32" y1="168" x2="35" y2="200" stroke="#c8a87a" stroke-width="3"/>
-    <!-- Feet -->
-    <path d="M15 200 Q8 205 5 202" stroke="#c8a87a" stroke-width="2" fill="none"/>
-    <path d="M15 200 Q15 207 12 206" stroke="#c8a87a" stroke-width="2" fill="none"/>
-    <path d="M35 200 Q42 205 45 202" stroke="#c8a87a" stroke-width="2" fill="none"/>
-    <path d="M35 200 Q35 207 38 206" stroke="#c8a87a" stroke-width="2" fill="none"/>
-  </g>
+<div class="step">
+  <div class="step-num">04</div>
+  <div class="step-body">
+    <h3>ต่อ Transistor 2N2222</h3>
+    <ul>
+      <li><code>Base (B) ← R-1K ← LM393 Pin1</code></li>
+      <li><code>Emitter (E) → GND</code></li>
+      <li><code>Collector (C) → ขา Coil− ของ Relay</code></li>
+      <li>ต่อ <code>1N4007 Diode</code> คร่อม Relay Coil (ขั้วกลับ) ป้องกัน Back-EMF</li>
+    </ul>
+  </div>
+</div>
 
-  <!-- Red flowers left bottom -->
-  <g transform="translate(15, 200)">
-    <ellipse cx="40" cy="50" rx="8" ry="16" fill="#e74c3c" opacity="0.85" class="petal"/>
-    <ellipse cx="20" cy="65" rx="16" ry="8" fill="#e74c3c" opacity="0.8" class="petal" style="animation-delay:0.7s"/>
-    <ellipse cx="60" cy="65" rx="16" ry="8" fill="#c0392b" opacity="0.8"/>
-    <ellipse cx="40" cy="80" rx="8" ry="16" fill="#c0392b" opacity="0.75"/>
-    <circle cx="40" cy="65" r="12" fill="#f39c12" opacity="0.7"/>
-    <circle cx="40" cy="65" r="6" fill="#e74c3c" opacity="0.9"/>
-  </g>
+<div class="step">
+  <div class="step-num">05</div>
+  <div class="step-body">
+    <h3>ต่อ Relay 5V</h3>
+    <ul>
+      <li>Relay Coil+  <code>→ +5V</code></li>
+      <li>Relay Coil− <code>→ Collector ของ 2N2222</code></li>
+      <li><code>COM → +12V Rail</code></li>
+      <li><code>NO (Normally Open) → สายบวก Solenoid Valve</code></li>
+    </ul>
+  </div>
+</div>
 
-  <!-- Green leaves -->
-  <path d="M15 290 Q60 240 100 250 Q70 270 20 300" fill="#27ae60" opacity="0.65"/>
-  <path d="M220 270 Q260 240 275 270 Q255 275 225 285" fill="#2ecc71" opacity="0.6"/>
-</svg>
-<span class="char">嘉</span>
+<div class="step">
+  <div class="step-num">06</div>
+  <div class="step-body">
+    <h3>ต่อ Solenoid Valve 12V</h3>
+    <ul>
+      <li>ขา + ของ Solenoid ← สาย <code>NO</code> ของ Relay</li>
+      <li>ขา − ของ Solenoid <code>→ GND</code></li>
+      <li>ติดตั้ง Valve บนท่อน้ำก่อนเข้าก๊อก</li>
+      <li>ทดสอบ: เมื่อ Relay ทำงาน → <code>COM-NO ต่อกัน → 12V ไหลผ่าน Valve → เปิดน้ำ</code></li>
+    </ul>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-num">07</div>
+  <div class="step-body">
+    <h3>ทดสอบและปรับจูนระบบ</h3>
+    <ul>
+      <li>เปิดไฟ ตรวจแรงดัน SMPS ก่อนทุกครั้ง</li>
+      <li>ยื่นมือใต้ Sensor → LED Indicator ของ Relay ต้องติด → น้ำไหล</li>
+      <li>หมุน <code>VR-10K</code> เพื่อปรับระยะตรวจจับ (ใกล้/ไกล)</li>
+      <li>ตรวจรอยรั่วท่อน้ำทุกจุด</li>
+      <li>ใส่วงจรในกล่อง <code>IP55</code> กันน้ำและความชื้น</li>
+    </ul>
+  </div>
+</div>
 ```
 
   </div>
 
-  <!-- PANEL 3: 銘 with Lotus + Goldfish + Water + Mountains -->
+  <!-- Warning -->
 
-  <div class="panel panel-3">
-    <svg class="deco" viewBox="0 0 300 340">
-      <!-- Sky gradient mountains -->
-      <path d="M0 100 Q50 20 100 80 Q150 20 200 70 Q250 10 300 60 L300 0 L0 0 Z" fill="#c8e6f0" opacity="0.35"/>
-
-```
-  <!-- Mountains -->
-  <path d="M200 340 Q220 200 250 180 Q270 200 300 220 L300 340 Z" fill="#7daa7d" opacity="0.5"/>
-  <path d="M230 340 Q255 210 280 195 Q290 210 310 230 L300 340 Z" fill="#5a8a5a" opacity="0.45"/>
-  <ellipse cx="260" cy="180" rx="20" ry="35" fill="#4a7a4a" opacity="0.4"/>
-
-  <!-- Lotus flower big pink -->
-  <g transform="translate(20, 130)">
-    <!-- Petals back layer -->
-    <ellipse cx="55" cy="60" rx="12" ry="28" fill="#e91e8c" opacity="0.55" transform="rotate(-30, 55, 60)"/>
-    <ellipse cx="55" cy="60" rx="12" ry="28" fill="#e91e8c" opacity="0.55" transform="rotate(30, 55, 60)"/>
-    <ellipse cx="55" cy="60" rx="12" ry="28" fill="#e91e8c" opacity="0.5" transform="rotate(90, 55, 60)"/>
-    <ellipse cx="55" cy="60" rx="12" ry="28" fill="#e91e8c" opacity="0.5" transform="rotate(-90, 55, 60)"/>
-    <!-- Petals front layer -->
-    <ellipse cx="55" cy="55" rx="13" ry="26" fill="#f06292" opacity="0.85" class="petal"/>
-    <ellipse cx="55" cy="55" rx="13" ry="26" fill="#f06292" opacity="0.8" transform="rotate(45, 55, 55)" class="petal" style="animation-delay:0.4s"/>
-    <ellipse cx="55" cy="55" rx="13" ry="26" fill="#ec407a" opacity="0.75" transform="rotate(-45, 55, 55)"/>
-    <ellipse cx="55" cy="55" rx="13" ry="26" fill="#ec407a" opacity="0.75" transform="rotate(90, 55, 55)"/>
-    <!-- Stamen -->
-    <circle cx="55" cy="55" r="14" fill="#ffc107" opacity="0.9"/>
-    <circle cx="55" cy="55" r="8" fill="#ff9800" opacity="0.95"/>
-    <!-- Stem -->
-    <line x1="55" y1="88" x2="55" y2="140" stroke="#388e3c" stroke-width="4" opacity="0.8"/>
-    <!-- Leaf -->
-    <ellipse cx="25" cy="130" rx="25" ry="15" fill="#388e3c" opacity="0.7" transform="rotate(-20,25,130)"/>
-  </g>
-
-  <!-- Second smaller lotus -->
-  <g transform="translate(160, 80)">
-    <ellipse cx="40" cy="45" rx="10" ry="22" fill="#ce93d8" opacity="0.7" class="petal"/>
-    <ellipse cx="40" cy="45" rx="10" ry="22" fill="#ba68c8" opacity="0.65" transform="rotate(60,40,45)"/>
-    <ellipse cx="40" cy="45" rx="10" ry="22" fill="#ab47bc" opacity="0.6" transform="rotate(-60,40,45)"/>
-    <ellipse cx="40" cy="45" rx="10" ry="22" fill="#9c27b0" opacity="0.55" transform="rotate(120,40,45)"/>
-    <circle cx="40" cy="45" r="10" fill="#fdd835" opacity="0.9"/>
-    <circle cx="40" cy="45" r="5" fill="#f9a825" opacity="0.95"/>
-    <line x1="40" y1="67" x2="40" y2="100" stroke="#388e3c" stroke-width="3" opacity="0.75"/>
-  </g>
-
-  <!-- Water surface -->
-  <path d="M0 260 Q50 250 100 258 Q150 265 200 255 Q250 248 300 260" stroke="#4fc3f7" stroke-width="3" fill="none" opacity="0.7"/>
-  <path d="M0 270 Q75 260 150 268 Q225 275 300 265" stroke="#29b6f6" stroke-width="2" fill="none" opacity="0.5"/>
-
-  <!-- Goldfish 1 -->
-  <g transform="translate(30, 270)">
-    <ellipse cx="35" cy="20" rx="22" ry="12" fill="#e74c3c" opacity="0.9"/>
-    <circle cx="52" cy="16" r="8" fill="#e74c3c" opacity="0.95"/>
-    <circle cx="56" cy="14" r="2.5" fill="#1a1a1a"/>
-    <circle cx="57" cy="13" r="1" fill="#fff"/>
-    <!-- Tail -->
-    <path d="M13 20 Q0 8 5 20 Q0 32 13 20" fill="#c0392b" opacity="0.85"/>
-    <!-- Fins -->
-    <path d="M30 8 Q35 0 45 5" stroke="#e74c3c" stroke-width="2" fill="none"/>
-    <path d="M35 28 Q30 38 40 35" fill="#c0392b" opacity="0.7"/>
-  </g>
-
-  <!-- Goldfish 2 -->
-  <g transform="translate(180, 285) scale(-1,1)" style="transform-origin: 35px 20px">
-    <ellipse cx="35" cy="20" rx="20" ry="10" fill="#e67e22" opacity="0.88"/>
-    <circle cx="52" cy="16" r="7" fill="#e67e22" opacity="0.9"/>
-    <circle cx="56" cy="14" r="2" fill="#1a1a1a"/>
-    <circle cx="57" cy="13" r="1" fill="#fff"/>
-    <path d="M15 20 Q2 10 7 20 Q2 30 15 20" fill="#d35400" opacity="0.8"/>
-    <path d="M30 9 Q35 1 44 6" stroke="#e67e22" stroke-width="2" fill="none"/>
-  </g>
-
-  <!-- Turtle on rock -->
-  <g transform="translate(120, 240)">
-    <ellipse cx="35" cy="45" rx="30" ry="15" fill="#7f8c8d" opacity="0.7"/>
-    <ellipse cx="35" cy="38" rx="22" ry="14" fill="#27ae60" opacity="0.85"/>
-    <ellipse cx="35" cy="38" rx="16" ry="10" fill="#2ecc71" opacity="0.7"/>
-    <!-- Shell pattern -->
-    <ellipse cx="35" cy="38" rx="8" ry="5" fill="#27ae60" opacity="0.5"/>
-    <line x1="27" y1="30" x2="43" y2="46" stroke="#1e8449" stroke-width="1.5" opacity="0.4"/>
-    <line x1="43" y1="30" x2="27" y2="46" stroke="#1e8449" stroke-width="1.5" opacity="0.4"/>
-    <!-- Head -->
-    <circle cx="57" cy="33" r="7" fill="#27ae60" opacity="0.9"/>
-    <circle cx="61" cy="30" r="2" fill="#1a1a1a"/>
-    <!-- Legs -->
-    <ellipse cx="15" cy="48" rx="6" ry="4" fill="#2ecc71" opacity="0.75" transform="rotate(-20,15,48)"/>
-    <ellipse cx="55" cy="48" rx="6" ry="4" fill="#2ecc71" opacity="0.75" transform="rotate(20,55,48)"/>
-  </g>
-
-  <!-- Water ripple circles -->
-  <circle cx="80" cy="305" r="12" stroke="#4fc3f7" stroke-width="1.5" fill="none" opacity="0.5"/>
-  <circle cx="80" cy="305" r="20" stroke="#29b6f6" stroke-width="1" fill="none" opacity="0.3"/>
-  <circle cx="220" cy="310" r="8" stroke="#4fc3f7" stroke-width="1.5" fill="none" opacity="0.45"/>
-</svg>
-<span class="char">銘</span>
-```
-
+  <div class="warning">
+    <div class="warning-title">⚠️ ข้อควรระวังด้านความปลอดภัย</div>
+    <p>• ห้ามสัมผัสสาย 220V AC ขณะวงจรเปิด &nbsp;|&nbsp; ใส่ฟิวส์ 1A ก่อน SMPS เสมอ<br>
+    • วงจรต้องอยู่ในกล่องกันน้ำ IP55+ เนื่องจากอยู่ใกล้แหล่งน้ำ<br>
+    • ตรวจสอบขั้วต่อทุกจุดก่อนเปิดไฟ &nbsp;|&nbsp; ใช้หัวแร้งที่ได้มาตรฐาน</p>
   </div>
-
-  <!-- Red seal -->
-
-  <div class="seal">龍嘉銘</div>
 
 </div>
 </body>
