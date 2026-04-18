@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>龍嘉銘</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@700;900&display=swap');
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background: #f9f3e8;
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+font-family: ‘Noto Serif TC’, serif;
+}
+
+.artwork {
+width: 900px;
+height: 340px;
+background: #fff;
+box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+display: flex;
+position: relative;
+overflow: hidden;
+border: 3px solid #c8a84b;
+outline: 6px solid #f9f3e8;
+outline-offset: 3px;
+}
+
+.panel {
+flex: 1;
+position: relative;
+display: flex;
+align-items: center;
+justify-content: center;
+overflow: hidden;
+}
+
+.panel:not(:last-child) {
+border-right: 2px solid #e8d9b0;
+}
+
+/* Character */
+.char {
+font-size: 130px;
+font-weight: 900;
+position: relative;
+z-index: 10;
+line-height: 1;
+color: transparent;
+-webkit-text-stroke: 2px rgba(60,20,10,0.85);
+text-shadow: 4px 4px 0px rgba(180,40,20,0.15);
+filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+animation: floatChar 4s ease-in-out infinite;
+}
+
+@keyframes floatChar {
+0%, 100% { transform: translateY(0px); }
+50% { transform: translateY(-6px); }
+}
+
+/* Panel 1 - 龍 - Eagle/Phoenix + Sun + Mountains */
+.panel-1 { background: linear-gradient(160deg, #fff8ee 0%, #fce8d0 60%, #e8f5e8 100%); }
+.panel-1 .char { -webkit-text-stroke: 2.5px #8B1A1A; color: rgba(180,40,20,0.08); }
+
+/* Panel 2 - 嘉 - Crane + Lanterns */
+.panel-2 { background: linear-gradient(160deg, #f0f8ff 0%, #fff0f0 50%, #f0fff0 100%); }
+.panel-2 .char { -webkit-text-stroke: 2.5px #1a5c1a; color: rgba(20,100,20,0.08); }
+
+/* Panel 3 - 銘 - Lotus + Fish + Water */
+.panel-3 { background: linear-gradient(160deg, #fff5f8 0%, #e8f8ff 60%, #fff8e8 100%); }
+.panel-3 .char { -webkit-text-stroke: 2.5px #1a3a8B; color: rgba(20,60,180,0.08); }
+
+/* SVG decorations */
+.deco {
+position: absolute;
+top: 0; left: 0;
+width: 100%; height: 100%;
+pointer-events: none;
+}
+
+/* Floating petals animation */
+.petal {
+animation: drift 6s ease-in-out infinite;
+}
+@keyframes drift {
+0%, 100% { transform: translate(0,0) rotate(0deg); opacity:0.7; }
+33% { transform: translate(4px,-8px) rotate(15deg); opacity:1; }
+66% { transform: translate(-3px,-4px) rotate(-10deg); opacity:0.8; }
+}
+
+.crane-wing {
+animation: flap 2.5s ease-in-out infinite;
+transform-origin: center;
+}
+@keyframes flap {
+0%, 100% { transform: scaleY(1); }
+50% { transform: scaleY(0.75); }
+}
+
+/* Red seal bottom right */
+.seal {
+position: absolute;
+bottom: 12px;
+right: 14px;
+width: 44px;
+height: 44px;
+background: #c0392b;
+border-radius: 4px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: #fff;
+font-size: 11px;
+font-weight: 900;
+letter-spacing: 1px;
+z-index: 20;
+box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+writing-mode: vertical-rl;
+text-orientation: mixed;
+line-height: 1;
+padding: 2px;
+}
+</style>
+
+</head>
+<body>
+<div class="artwork">
+
+  <!-- PANEL 1: 龍 with Phoenix + Sun + Mountains -->
+
+  <div class="panel panel-1">
+    <svg class="deco" viewBox="0 0 300 340">
+      <!-- Mountains background -->
+      <ellipse cx="60" cy="280" rx="70" ry="90" fill="#d4e8c2" opacity="0.5"/>
+      <ellipse cx="240" cy="300" rx="50" ry="70" fill="#b8d4a0" opacity="0.4"/>
+      <ellipse cx="150" cy="310" rx="40" ry="55" fill="#2d6a2d" opacity="0.25"/>
+
+```
+  <!-- Sun top left -->
+  <circle cx="50" cy="55" r="22" fill="#e74c3c" opacity="0.9"/>
+  <circle cx="50" cy="55" r="16" fill="#f39c12" opacity="0.85"/>
+  <!-- Sun rays -->
+  <g stroke="#e74c3c" stroke-width="2" opacity="0.6">
+    <line x1="50" y1="25" x2="50" y2="18"/>
+    <line x1="72" y1="35" x2="78" y2="30"/>
+    <line x1="80" y1="55" x2="88" y2="55"/>
+    <line x1="72" y1="75" x2="78" y2="80"/>
+    <line x1="28" y1="35" x2="22" y2="30"/>
+    <line x1="20" y1="55" x2="12" y2="55"/>
+  </g>
+
+  <!-- Birds flying near sun -->
+  <path d="M70 30 Q75 25 80 30" stroke="#333" stroke-width="1.5" fill="none"/>
+  <path d="M85 22 Q90 17 95 22" stroke="#333" stroke-width="1.5" fill="none"/>
+  <path d="M100 32 Q105 27 110 32" stroke="#333" stroke-width="1.5" fill="none"/>
+
+  <!-- Phoenix/Eagle - large red bird -->
+  <g transform="translate(30, 130)">
+    <!-- Body -->
+    <ellipse cx="80" cy="60" rx="28" ry="18" fill="#c0392b" opacity="0.9"/>
+    <!-- Head -->
+    <circle cx="112" cy="48" r="12" fill="#c0392b"/>
+    <circle cx="118" cy="43" r="5" fill="#e74c3c"/>
+    <!-- Beak -->
+    <path d="M124 44 L134 42 L124 48 Z" fill="#f39c12"/>
+    <!-- Eye -->
+    <circle cx="120" cy="44" r="2.5" fill="#1a1a1a"/>
+    <circle cx="121" cy="43" r="1" fill="#fff"/>
+    <!-- Tail feathers -->
+    <path d="M52 65 Q20 90 5 120" stroke="#c0392b" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M55 68 Q15 100 8 135" stroke="#e74c3c" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M50 62 Q10 80 0 110" stroke="#922b21" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Wings -->
+    <path d="M80 45 Q100 15 130 25 Q110 40 95 48" fill="#c0392b" opacity="0.85" class="crane-wing"/>
+    <path d="M80 68 Q95 85 115 80 Q100 65 90 62" fill="#922b21" opacity="0.7"/>
+  </g>
+
+  <!-- Red flowers bottom -->
+  <g transform="translate(160, 200)">
+    <circle cx="30" cy="40" r="18" fill="#e74c3c" opacity="0.85"/>
+    <circle cx="30" cy="40" r="10" fill="#f39c12" opacity="0.7"/>
+    <!-- Petals -->
+    <ellipse cx="30" cy="22" rx="7" ry="12" fill="#e74c3c" opacity="0.7" class="petal"/>
+    <ellipse cx="48" cy="32" rx="12" ry="7" fill="#e74c3c" opacity="0.7" class="petal" style="animation-delay:0.5s"/>
+    <ellipse cx="12" cy="32" rx="12" ry="7" fill="#e74c3c" opacity="0.7" class="petal" style="animation-delay:1s"/>
+    <ellipse cx="48" cy="52" rx="12" ry="7" fill="#c0392b" opacity="0.7"/>
+    <ellipse cx="12" cy="52" rx="12" ry="7" fill="#c0392b" opacity="0.7"/>
+  </g>
+
+  <!-- Green leaves -->
+  <path d="M190 280 Q210 240 230 220 Q225 250 200 290" fill="#27ae60" opacity="0.7"/>
+  <path d="M180 290 Q200 250 215 225 Q200 255 185 295" fill="#2ecc71" opacity="0.6"/>
+  <path d="M160 275 Q170 245 200 240 Q185 260 165 285" fill="#1e8449" opacity="0.65"/>
+
+  <!-- Blue accent bottom -->
+  <path d="M100 330 Q150 310 200 330" stroke="#3498db" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.6"/>
+</svg>
+<span class="char">龍</span>
+```
+
+  </div>
+
+  <!-- PANEL 2: 嘉 with Crane + Red Lanterns + Flowers -->
+
+  <div class="panel panel-2">
+    <svg class="deco" viewBox="0 0 300 340">
+      <!-- Background mountain hint -->
+      <ellipse cx="150" cy="320" rx="120" ry="50" fill="#c8e6c9" opacity="0.3"/>
+
+```
+  <!-- Hanging Lanterns -->
+  <g transform="translate(30, 60)">
+    <!-- Lantern cord -->
+    <line x1="50" y1="0" x2="50" y2="15" stroke="#8B4513" stroke-width="2"/>
+    <!-- Lantern body -->
+    <rect x="28" y="15" width="44" height="70" rx="22" fill="#e74c3c" opacity="0.92"/>
+    <!-- Lantern ribs -->
+    <line x1="28" y1="35" x2="72" y2="35" stroke="#c0392b" stroke-width="1.5" opacity="0.6"/>
+    <line x1="28" y1="50" x2="72" y2="50" stroke="#c0392b" stroke-width="1.5" opacity="0.6"/>
+    <line x1="28" y1="65" x2="72" y2="65" stroke="#c0392b" stroke-width="1.5" opacity="0.6"/>
+    <!-- Lantern top/bottom caps -->
+    <rect x="32" y="12" width="36" height="8" rx="3" fill="#c0392b"/>
+    <rect x="32" y="82" width="36" height="8" rx="3" fill="#c0392b"/>
+    <!-- 福 character -->
+    <text x="50" y="60" text-anchor="middle" font-size="28" font-weight="bold" fill="#f39c12" font-family="serif">福</text>
+    <!-- Tassel -->
+    <line x1="40" y1="90" x2="38" y2="115" stroke="#f39c12" stroke-width="1.5"/>
+    <line x1="50" y1="90" x2="50" y2="118" stroke="#f39c12" stroke-width="1.5"/>
+    <line x1="60" y1="90" x2="62" y2="115" stroke="#f39c12" stroke-width="1.5"/>
+  </g>
+
+  <!-- Second lantern -->
+  <g transform="translate(175, 50)">
+    <line x1="50" y1="0" x2="50" y2="15" stroke="#8B4513" stroke-width="2"/>
+    <rect x="28" y="15" width="44" height="70" rx="22" fill="#c0392b" opacity="0.9"/>
+    <line x1="28" y1="35" x2="72" y2="35" stroke="#922b21" stroke-width="1.5" opacity="0.6"/>
+    <line x1="28" y1="50" x2="72" y2="50" stroke="#922b21" stroke-width="1.5" opacity="0.6"/>
+    <line x1="28" y1="65" x2="72" y2="65" stroke="#922b21" stroke-width="1.5" opacity="0.6"/>
+    <rect x="32" y="12" width="36" height="8" rx="3" fill="#922b21"/>
+    <rect x="32" y="82" width="36" height="8" rx="3" fill="#922b21"/>
+    <text x="50" y="60" text-anchor="middle" font-size="28" font-weight="bold" fill="#f39c12" font-family="serif">嘉</text>
+    <line x1="40" y1="90" x2="38" y2="115" stroke="#e74c3c" stroke-width="1.5"/>
+    <line x1="50" y1="90" x2="50" y2="118" stroke="#e74c3c" stroke-width="1.5"/>
+    <line x1="60" y1="90" x2="62" y2="115" stroke="#e74c3c" stroke-width="1.5"/>
+  </g>
+
+  <!-- Crane standing tall -->
+  <g transform="translate(120, 40)">
+    <!-- Long neck -->
+    <path d="M30 120 Q35 80 45 50 Q50 35 55 20" stroke="#e0e0e0" stroke-width="8" fill="none" stroke-linecap="round"/>
+    <path d="M30 120 Q35 80 45 50 Q50 35 55 20" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <!-- Head -->
+    <circle cx="57" cy="16" r="9" fill="#f0f0f0"/>
+    <!-- Red cap -->
+    <ellipse cx="57" cy="9" rx="7" ry="5" fill="#e74c3c"/>
+    <!-- Beak -->
+    <path d="M66 16 L82 14 L66 20 Z" fill="#d4a017"/>
+    <!-- Eye -->
+    <circle cx="63" cy="15" r="2" fill="#1a1a1a"/>
+    <!-- Body -->
+    <ellipse cx="25" cy="140" rx="22" ry="28" fill="#f5f5f5"/>
+    <!-- Black wing tips -->
+    <path d="M5 130 Q-15 160 -5 175 Q10 155 20 145" fill="#1a1a1a" opacity="0.8" class="crane-wing"/>
+    <path d="M45 130 Q65 160 55 175 Q40 155 30 145" fill="#2c3e50" opacity="0.7" class="crane-wing" style="animation-delay:0.3s"/>
+    <!-- Legs -->
+    <line x1="18" y1="168" x2="15" y2="200" stroke="#c8a87a" stroke-width="3"/>
+    <line x1="32" y1="168" x2="35" y2="200" stroke="#c8a87a" stroke-width="3"/>
+    <!-- Feet -->
+    <path d="M15 200 Q8 205 5 202" stroke="#c8a87a" stroke-width="2" fill="none"/>
+    <path d="M15 200 Q15 207 12 206" stroke="#c8a87a" stroke-width="2" fill="none"/>
+    <path d="M35 200 Q42 205 45 202" stroke="#c8a87a" stroke-width="2" fill="none"/>
+    <path d="M35 200 Q35 207 38 206" stroke="#c8a87a" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- Red flowers left bottom -->
+  <g transform="translate(15, 200)">
+    <ellipse cx="40" cy="50" rx="8" ry="16" fill="#e74c3c" opacity="0.85" class="petal"/>
+    <ellipse cx="20" cy="65" rx="16" ry="8" fill="#e74c3c" opacity="0.8" class="petal" style="animation-delay:0.7s"/>
+    <ellipse cx="60" cy="65" rx="16" ry="8" fill="#c0392b" opacity="0.8"/>
+    <ellipse cx="40" cy="80" rx="8" ry="16" fill="#c0392b" opacity="0.75"/>
+    <circle cx="40" cy="65" r="12" fill="#f39c12" opacity="0.7"/>
+    <circle cx="40" cy="65" r="6" fill="#e74c3c" opacity="0.9"/>
+  </g>
+
+  <!-- Green leaves -->
+  <path d="M15 290 Q60 240 100 250 Q70 270 20 300" fill="#27ae60" opacity="0.65"/>
+  <path d="M220 270 Q260 240 275 270 Q255 275 225 285" fill="#2ecc71" opacity="0.6"/>
+</svg>
+<span class="char">嘉</span>
+```
+
+  </div>
+
+  <!-- PANEL 3: 銘 with Lotus + Goldfish + Water + Mountains -->
+
+  <div class="panel panel-3">
+    <svg class="deco" viewBox="0 0 300 340">
+      <!-- Sky gradient mountains -->
+      <path d="M0 100 Q50 20 100 80 Q150 20 200 70 Q250 10 300 60 L300 0 L0 0 Z" fill="#c8e6f0" opacity="0.35"/>
+
+```
+  <!-- Mountains -->
+  <path d="M200 340 Q220 200 250 180 Q270 200 300 220 L300 340 Z" fill="#7daa7d" opacity="0.5"/>
+  <path d="M230 340 Q255 210 280 195 Q290 210 310 230 L300 340 Z" fill="#5a8a5a" opacity="0.45"/>
+  <ellipse cx="260" cy="180" rx="20" ry="35" fill="#4a7a4a" opacity="0.4"/>
+
+  <!-- Lotus flower big pink -->
+  <g transform="translate(20, 130)">
+    <!-- Petals back layer -->
+    <ellipse cx="55" cy="60" rx="12" ry="28" fill="#e91e8c" opacity="0.55" transform="rotate(-30, 55, 60)"/>
+    <ellipse cx="55" cy="60" rx="12" ry="28" fill="#e91e8c" opacity="0.55" transform="rotate(30, 55, 60)"/>
+    <ellipse cx="55" cy="60" rx="12" ry="28" fill="#e91e8c" opacity="0.5" transform="rotate(90, 55, 60)"/>
+    <ellipse cx="55" cy="60" rx="12" ry="28" fill="#e91e8c" opacity="0.5" transform="rotate(-90, 55, 60)"/>
+    <!-- Petals front layer -->
+    <ellipse cx="55" cy="55" rx="13" ry="26" fill="#f06292" opacity="0.85" class="petal"/>
+    <ellipse cx="55" cy="55" rx="13" ry="26" fill="#f06292" opacity="0.8" transform="rotate(45, 55, 55)" class="petal" style="animation-delay:0.4s"/>
+    <ellipse cx="55" cy="55" rx="13" ry="26" fill="#ec407a" opacity="0.75" transform="rotate(-45, 55, 55)"/>
+    <ellipse cx="55" cy="55" rx="13" ry="26" fill="#ec407a" opacity="0.75" transform="rotate(90, 55, 55)"/>
+    <!-- Stamen -->
+    <circle cx="55" cy="55" r="14" fill="#ffc107" opacity="0.9"/>
+    <circle cx="55" cy="55" r="8" fill="#ff9800" opacity="0.95"/>
+    <!-- Stem -->
+    <line x1="55" y1="88" x2="55" y2="140" stroke="#388e3c" stroke-width="4" opacity="0.8"/>
+    <!-- Leaf -->
+    <ellipse cx="25" cy="130" rx="25" ry="15" fill="#388e3c" opacity="0.7" transform="rotate(-20,25,130)"/>
+  </g>
+
+  <!-- Second smaller lotus -->
+  <g transform="translate(160, 80)">
+    <ellipse cx="40" cy="45" rx="10" ry="22" fill="#ce93d8" opacity="0.7" class="petal"/>
+    <ellipse cx="40" cy="45" rx="10" ry="22" fill="#ba68c8" opacity="0.65" transform="rotate(60,40,45)"/>
+    <ellipse cx="40" cy="45" rx="10" ry="22" fill="#ab47bc" opacity="0.6" transform="rotate(-60,40,45)"/>
+    <ellipse cx="40" cy="45" rx="10" ry="22" fill="#9c27b0" opacity="0.55" transform="rotate(120,40,45)"/>
+    <circle cx="40" cy="45" r="10" fill="#fdd835" opacity="0.9"/>
+    <circle cx="40" cy="45" r="5" fill="#f9a825" opacity="0.95"/>
+    <line x1="40" y1="67" x2="40" y2="100" stroke="#388e3c" stroke-width="3" opacity="0.75"/>
+  </g>
+
+  <!-- Water surface -->
+  <path d="M0 260 Q50 250 100 258 Q150 265 200 255 Q250 248 300 260" stroke="#4fc3f7" stroke-width="3" fill="none" opacity="0.7"/>
+  <path d="M0 270 Q75 260 150 268 Q225 275 300 265" stroke="#29b6f6" stroke-width="2" fill="none" opacity="0.5"/>
+
+  <!-- Goldfish 1 -->
+  <g transform="translate(30, 270)">
+    <ellipse cx="35" cy="20" rx="22" ry="12" fill="#e74c3c" opacity="0.9"/>
+    <circle cx="52" cy="16" r="8" fill="#e74c3c" opacity="0.95"/>
+    <circle cx="56" cy="14" r="2.5" fill="#1a1a1a"/>
+    <circle cx="57" cy="13" r="1" fill="#fff"/>
+    <!-- Tail -->
+    <path d="M13 20 Q0 8 5 20 Q0 32 13 20" fill="#c0392b" opacity="0.85"/>
+    <!-- Fins -->
+    <path d="M30 8 Q35 0 45 5" stroke="#e74c3c" stroke-width="2" fill="none"/>
+    <path d="M35 28 Q30 38 40 35" fill="#c0392b" opacity="0.7"/>
+  </g>
+
+  <!-- Goldfish 2 -->
+  <g transform="translate(180, 285) scale(-1,1)" style="transform-origin: 35px 20px">
+    <ellipse cx="35" cy="20" rx="20" ry="10" fill="#e67e22" opacity="0.88"/>
+    <circle cx="52" cy="16" r="7" fill="#e67e22" opacity="0.9"/>
+    <circle cx="56" cy="14" r="2" fill="#1a1a1a"/>
+    <circle cx="57" cy="13" r="1" fill="#fff"/>
+    <path d="M15 20 Q2 10 7 20 Q2 30 15 20" fill="#d35400" opacity="0.8"/>
+    <path d="M30 9 Q35 1 44 6" stroke="#e67e22" stroke-width="2" fill="none"/>
+  </g>
+
+  <!-- Turtle on rock -->
+  <g transform="translate(120, 240)">
+    <ellipse cx="35" cy="45" rx="30" ry="15" fill="#7f8c8d" opacity="0.7"/>
+    <ellipse cx="35" cy="38" rx="22" ry="14" fill="#27ae60" opacity="0.85"/>
+    <ellipse cx="35" cy="38" rx="16" ry="10" fill="#2ecc71" opacity="0.7"/>
+    <!-- Shell pattern -->
+    <ellipse cx="35" cy="38" rx="8" ry="5" fill="#27ae60" opacity="0.5"/>
+    <line x1="27" y1="30" x2="43" y2="46" stroke="#1e8449" stroke-width="1.5" opacity="0.4"/>
+    <line x1="43" y1="30" x2="27" y2="46" stroke="#1e8449" stroke-width="1.5" opacity="0.4"/>
+    <!-- Head -->
+    <circle cx="57" cy="33" r="7" fill="#27ae60" opacity="0.9"/>
+    <circle cx="61" cy="30" r="2" fill="#1a1a1a"/>
+    <!-- Legs -->
+    <ellipse cx="15" cy="48" rx="6" ry="4" fill="#2ecc71" opacity="0.75" transform="rotate(-20,15,48)"/>
+    <ellipse cx="55" cy="48" rx="6" ry="4" fill="#2ecc71" opacity="0.75" transform="rotate(20,55,48)"/>
+  </g>
+
+  <!-- Water ripple circles -->
+  <circle cx="80" cy="305" r="12" stroke="#4fc3f7" stroke-width="1.5" fill="none" opacity="0.5"/>
+  <circle cx="80" cy="305" r="20" stroke="#29b6f6" stroke-width="1" fill="none" opacity="0.3"/>
+  <circle cx="220" cy="310" r="8" stroke="#4fc3f7" stroke-width="1.5" fill="none" opacity="0.45"/>
+</svg>
+<span class="char">銘</span>
+```
+
+  </div>
+
+  <!-- Red seal -->
+
+  <div class="seal">龍嘉銘</div>
+
+</div>
+</body>
+</html>
