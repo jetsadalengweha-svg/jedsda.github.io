@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>f(x,y) = x² + y²</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.27.0/plotly.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0a14;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', sans-serif;
+    color: #e0e0ff;
+  }
+  h1 {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+    color: #7ecfff;
+    letter-spacing: 2px;
+  }
+  .subtitle {
+    font-size: 0.85rem;
+    color: #5a5a8a;
+    margin-bottom: 16px;
+  }
+  #chart {
+    width: 96vw;
+    max-width: 920px;
+    height: 82vh;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(80,180,255,0.15);
+  }
+</style>
+</head>
+<body>
+
+<h1>f(x, y) = x² + y²</h1>
+<p class="subtitle">−10 &lt; x &lt; 10 &nbsp;|&nbsp; −10 &lt; y &lt; 10</p>
+<div id="chart"></div>
+
+<script>
+  const steps = 80;
+  const xMin = -10, xMax = 10;
+  const yMin = -10, yMax = 10;
+
+  const x = [], y = [], z = [];
+
+  for (let i = 0; i <= steps; i++)
+    x.push(xMin + (xMax - xMin) * i / steps);
+
+  for (let j = 0; j <= steps; j++)
+    y.push(yMin + (yMax - yMin) * j / steps);
+
+  for (let j = 0; j <= steps; j++) {
+    const row = [];
+    for (let i = 0; i <= steps; i++)
+      row.push(x[i] ** 2 + y[j] ** 2);
+    z.push(row);
+  }
+
+  const data = [{
+    type: 'surface',
+    x: x,
+    y: y,
+    z: z,
+    colorscale: [
+      [0.00, '#020318'],
+      [0.10, '#0d1b6e'],
+      [0.22, '#1a3a9c'],
+      [0.35, '#1565c0'],
+      [0.47, '#0097a7'],
+      [0.58, '#00bcd4'],
+      [0.68, '#26c6da'],
+      [0.78, '#80deea'],
+      [0.88, '#e0f7fa'],
+      [1.00, '#ffffff'],
+    ],
+    opacity: 0.97,
+    contours: {
+      z: {
+        show: true,
+        usecolormap: true,
+        highlightcolor: '#ffffff',
+        project: { z: true }
+      },
+      x: { show: false },
+      y: { show: false }
+    },
+    lighting: {
+      ambient:   0.45,
+      diffuse:   0.85,
+      specular:  0.5,
+      roughness: 0.4,
+      fresnel:   0.5
+    },
+    lightposition: { x: 2000, y: 1000, z: 3000 }
+  }];
+
+  const layout = {
+    paper_bgcolor: '#0a0a14',
+    scene: {
+      bgcolor: '#0a0a14',
+      xaxis: {
+        title: { text: 'x', font: { color: '#7ecfff', size: 13 } },
+        gridcolor: '#1e1e3a',
+        zerolinecolor: '#2255aa',
+        tickfont: { color: '#6080aa' },
+        range: [xMin, xMax]
+      },
+      yaxis: {
+        title: { text: 'y', font: { color: '#7ecfff', size: 13 } },
+        gridcolor: '#1e1e3a',
+        zerolinecolor: '#2255aa',
+        tickfont: { color: '#6080aa' },
+        range: [yMin, yMax]
+      },
+      zaxis: {
+        title: { text: 'f(x,y)', font: { color: '#7ecfff', size: 13 } },
+        gridcolor: '#1e1e3a',
+        zerolinecolor: '#2255aa',
+        tickfont: { color: '#6080aa' }
+      },
+      camera: {
+        eye: { x: 1.5, y: -1.5, z: 1.1 }
+      },
+      aspectratio: { x: 1, y: 1, z: 0.7 }
+    },
+    margin: { l: 0, r: 0, t: 0, b: 0 }
+  };
+
+  const config = {
+    responsive: true,
+    displayModeBar: true,
+    modeBarButtonsToRemove: ['sendDataToCloud'],
+    displaylogo: false
+  };
+
+  Plotly.newPlot('chart', data, layout, config);
+</script>
+
+</body>
+</html>
