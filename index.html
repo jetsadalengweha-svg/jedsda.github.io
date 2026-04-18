@@ -1,1 +1,83 @@
+<!DOCTYPE html>
 
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>หน้าหลัก</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0f0f1a;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', sans-serif;
+    gap: 24px;
+  }
+  h1 {
+    color: #a0a8ff;
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #1a1a2e;
+    border: 1px solid #2a2a4a;
+    border-radius: 14px;
+    padding: 18px 32px;
+    width: 320px;
+    text-decoration: none;
+    color: #e0e0ff;
+    font-size: 1.05rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+  }
+  .link-card:hover {
+    background: #24245a;
+    border-color: #4361ee;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(67,97,238,0.3);
+    color: #ffffff;
+  }
+  .link-card .icon {
+    font-size: 1.6rem;
+  }
+  .link-card .num {
+    background: #4361ee;
+    color: #fff;
+    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<h1>🔗 เมนูลิงก์</h1>
+
+<a class="link-card" href="app1.html">
+  <span class="num">1</span>
+  <span class="icon">📱</span>
+  <span>app1.html</span>
+</a>
+
+<a class="link-card" href="Funtiony2x2.html">
+  <span class="num">2</span>
+  <span class="icon">📈</span>
+  <span>Funtiony2x2.html</span>
+</a>
+
+</body>
+</html>
