@@ -267,7 +267,8 @@ box-shadow: 0 6px 30px rgba(255,50,80,0.45);
 /* Result */
 #resultBox {
 text-align: center;
-min-height: 80px;
+min-height: 80px; 
+color: #FFFFFF;
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -285,7 +286,7 @@ transform: scale(1);
 
 .result-label {
 font-size: 0.85rem;
-color: var(–muted);
+color: #ffffff;
 letter-spacing: 0.2em;
 text-transform: uppercase;
 margin-bottom: 0.3rem;
@@ -358,7 +359,7 @@ text-align: center;
 <input type="number" id="numSectors" min="2" max="20" value="6" placeholder="เช่น 6">
 
 <label>ชื่อแต่ละช่อง</label>
-<textarea id="titlesInput" placeholder="ใส่ชื่อแต่ละบรรทัด เช่น&#10;รางวัลที่ 1&#10;รางวัลที่ 2&#10;ลองใหม่&#10;ของรางวัล&#10;ฟรี!&#10;ดีมาก"></textarea>
+<textarea font-color="#aaaaaa" id="titlesInput" placeholder="ใส่ชื่อแต่ละบรรทัด เช่น&#10;รางวัลที่ 1&#10;รางวัลที่ 2&#10;ลองใหม่&#10;ของรางวัล&#10;ฟรี!&#10;ดีมาก"></textarea>
 <p class="hint">ใส่ชื่อทีละบรรทัด ให้ครบตามจำนวนช่อง</p>
 <p class="error-msg" id="errorMsg">⚠️ จำนวนชื่อไม่ตรงกับจำนวนช่อง</p>
 
