@@ -1,0 +1,649 @@
+cat > /mnt/user-data/outputs/pharmacy_bootstrap.html << 'ENDOFFILE'
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharmacy PMS — GitHub Codespaces Setup</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sarabun',sans-serif;background:#0f172a;color:#e2e8f0;font-size:14px}
+.header{background:#1e293b;padding:16px 24px;border-bottom:1px solid #334155;position:sticky;top:0;z-index:20}
+.header h1{font-size:16px;color:#5eead4;margin-bottom:2px}
+.header p{font-size:12px;color:#94a3b8}
+.tabs{display:flex;gap:4px;padding:10px 24px;background:#1e293b;border-bottom:1px solid #334155;overflow-x:auto}
+.tab{padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;background:#0f172a;color:#94a3b8;border:1px solid #334155}
+.tab.active{background:#0f766e;color:#fff;border-color:#0f766e}
+.content{display:none}.content.active{display:block}
+.section{padding:20px 24px}
+.step-box{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:16px 20px;margin-bottom:16px}
+.step-box h3{color:#5eead4;font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.step{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start}
+.step-num{background:#0f766e;color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.step-body{flex:1}
+.step-title{font-size:13px;font-weight:600;color:#e2e8f0;margin-bottom:4px}
+.step-desc{font-size:12px;color:#94a3b8;line-height:1.6}
+.img-placeholder{background:#0f172a;border:1px dashed #334155;border-radius:6px;padding:10px 14px;font-size:11px;color:#64748b;margin-top:6px;text-align:center}
+.cmd-block{position:relative;margin-top:8px}
+.cmd{background:#020617;border:1px solid #1e293b;border-radius:6px;padding:10px 14px;font-family:'Courier New',monospace;font-size:12px;color:#86efac;white-space:pre-wrap;word-break:break-all}
+.copy-btn{position:absolute;top:6px;right:6px;background:#0f766e;color:#fff;border:none;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px}
+.copy-btn:hover{background:#0d9488}
+.copy-btn.ok{background:#16a34a}
+.warn{background:#422006;border:1px solid #92400e;border-radius:6px;padding:10px 14px;font-size:12px;color:#fde68a;margin-top:8px;line-height:1.6}
+.info{background:#0c1a4a;border:1px solid #1d4ed8;border-radius:6px;padding:10px 14px;font-size:12px;color:#93c5fd;margin-top:8px;line-height:1.6}
+.ok-box{background:#052e16;border:1px solid #16a34a;border-radius:6px;padding:10px 14px;font-size:12px;color:#86efac;margin-top:8px}
+.fh{background:#1e293b;padding:10px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #334155;position:sticky;top:98px;z-index:10}
+.fp{font-family:monospace;font-size:12px;color:#fde68a}
+.btn{background:#0f766e;color:#fff;border:none;padding:6px 14px;border-radius:5px;cursor:pointer;font-size:12px}
+pre.code{padding:20px 24px;font-size:12px;line-height:1.7;overflow-x:auto;white-space:pre;font-family:'Courier New',monospace;color:#e2e8f0}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>🏥 Pharmacy PMS — Setup บน GitHub Codespaces</h1>
+  <p>ไม่ต้องลงบนเครื่อง — ทำทุกอย่างบนเบราว์เซอร์</p>
+</div>
+<div class="tabs">
+  <div class="tab active" onclick="show(0)">📋 ขั้นตอน Setup</div>
+  <div class="tab" onclick="show(1)">⚡ Bootstrap Script</div>
+  <div class="tab" onclick="show(2)">🔐 ตั้งค่า Secrets</div>
+  <div class="tab" onclick="show(3)">🌐 เปิด GitHub Pages</div>
+</div>
+
+<!-- Tab 0: ขั้นตอน -->
+<div class="content active" id="tab0">
+<div class="section">
+
+  <div class="step-box">
+    <h3>🐙 ขั้นตอนที่ 1 — สร้าง GitHub Repository</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-body">
+      <div class="step-title">ไปที่ github.com → กด "New repository"</div>
+      <div class="step-desc">
+        • Repository name: <strong>pharmacy-pms</strong><br>
+        • ตั้งเป็น <strong>Public</strong> (GitHub Pages ฟรีต้องเป็น Public)<br>
+        • ✅ เลือก "Add a README file"<br>
+        • กด <strong>"Create repository"</strong>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="step-box">
+    <h3>💻 ขั้นตอนที่ 2 — เปิด GitHub Codespaces</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-body">
+      <div class="step-title">ใน repo ที่เพิ่งสร้าง กดปุ่ม <span style="background:#238636;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px">Code ▼</span></div>
+      <div class="step-desc">เลือก tab <strong>"Codespaces"</strong> → กด <strong>"Create codespace on main"</strong></div>
+      <div class="info">ℹ️ รอประมาณ 30-60 วินาที จะเปิด VS Code ในเบราว์เซอร์ พร้อม Terminal ด้านล่าง</div>
+    </div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body">
+      <div class="step-title">เปิด Terminal ใน Codespaces</div>
+      <div class="step-desc">กด <kbd style="background:#334155;padding:2px 6px;border-radius:3px;font-size:11px">Ctrl + `</kbd> หรือไปที่ Menu → Terminal → New Terminal</div>
+    </div></div>
+  </div>
+
+  <div class="step-box">
+    <h3>⚡ ขั้นตอนที่ 3 — รัน Bootstrap Script</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-body">
+      <div class="step-title">ใน Terminal ของ Codespaces ให้ไปที่ tab "Bootstrap Script" แล้วคัดลอก script ทั้งหมด</div>
+      <div class="step-desc">วางใน Terminal แล้วกด Enter — script จะสร้างทุกอย่างให้อัตโนมัติ (~2-3 นาที)</div>
+    </div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body">
+      <div class="step-title">รอจนเห็นข้อความ "✅ Setup เสร็จแล้ว!"</div>
+      <div class="step-desc">script จะสร้าง project structure, ติดตั้ง package และ commit ไฟล์ทั้งหมดขึ้น GitHub</div>
+    </div></div>
+  </div>
+
+  <div class="step-box">
+    <h3>🔐 ขั้นตอนที่ 4 — ตั้งค่า Supabase Secrets</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-body">
+      <div class="step-title">ดูวิธีตั้งค่าที่ tab "ตั้งค่า Secrets"</div>
+      <div class="step-desc">ต้องทำก่อน Deploy ถึงจะเชื่อมต่อ Supabase ได้</div>
+    </div></div>
+  </div>
+
+  <div class="step-box">
+    <h3>🌐 ขั้นตอนที่ 5 — เปิด GitHub Pages</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-body">
+      <div class="step-title">ดูวิธีที่ tab "เปิด GitHub Pages"</div>
+      <div class="step-desc">ทำครั้งเดียว หลังจากนั้น push ทุกครั้ง deploy อัตโนมัติ</div>
+    </div></div>
+  </div>
+
+</div>
+</div>
+
+<!-- Tab 1: Bootstrap Script -->
+<div class="content" id="tab1">
+<div class="fh">
+  <span class="fp">⚡ Bootstrap Script — วางใน Codespaces Terminal แล้วกด Enter</span>
+  <button class="btn" id="mainCopyBtn" onclick="copyMain()">📋 คัดลอก Script ทั้งหมด</button>
+</div>
+<pre class="code" id="mainScript">#!/bin/bash
+set -e
+
+echo "🏥 กำลังสร้าง Pharmacy PMS..."
+
+# ── 1. สร้าง Vite React Project ──────────────────────────
+npm create vite@latest pharmacy-pms -- --template react --yes 2>/dev/null || true
+cd pharmacy-pms
+
+# ── 2. ติดตั้ง Dependencies ──────────────────────────────
+echo "📦 ติดตั้ง packages..."
+npm install @supabase/supabase-js react-router-dom react-hook-form \
+  jspdf jspdf-autotable recharts date-fns
+
+npm install -D tailwindcss postcss autoprefixer gh-pages
+npx tailwindcss init -p --yes 2>/dev/null || true
+
+# ── 3. สร้างโฟลเดอร์ ─────────────────────────────────────
+mkdir -p src/components src/pages src/contexts src/lib src/hooks src/utils
+mkdir -p .github/workflows
+
+# ── 4. vite.config.js ────────────────────────────────────
+cat > vite.config.js << 'EOF'
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+
+export default defineConfig({
+  plugins: [react()],
+  base: '/pharmacy-pms/',
+})
+EOF
+
+# ── 5. package.json scripts ──────────────────────────────
+node -e "
+const fs = require('fs');
+const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
+pkg.scripts = {
+  ...pkg.scripts,
+  predeploy: 'npm run build',
+  deploy: 'gh-pages -d dist'
+};
+fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
+"
+
+# ── 6. tailwind.config.js ────────────────────────────────
+cat > tailwind.config.js << 'EOF'
+export default {
+  content: ['./index.html','./src/**/*.{js,jsx,ts,tsx}'],
+  theme: { extend: { fontFamily: { sans: ['Sarabun','sans-serif'] } } },
+  plugins: [],
+}
+EOF
+
+# ── 7. src/index.css ─────────────────────────────────────
+cat > src/index.css << 'EOF'
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+* { box-sizing: border-box; }
+body { font-family: 'Sarabun', sans-serif; background: #f8fafc; }
+EOF
+
+# ── 8. .env.example ──────────────────────────────────────
+cat > .env.example << 'EOF'
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+EOF
+
+# ── 9. .gitignore ─────────────────────────────────────────
+cat > .gitignore << 'EOF'
+node_modules
+dist
+.env
+.env.local
+*.local
+EOF
+
+# ── 10. src/lib/supabase.js ──────────────────────────────
+cat > src/lib/supabase.js << 'EOF'
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl  = import.meta.env.VITE_SUPABASE_URL
+const supabaseKey  = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing Supabase environment variables')
+}
+
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: { persistSession: true, autoRefreshToken: true },
+})
+EOF
+
+# ── 11. src/contexts/AuthContext.jsx ─────────────────────
+cat > src/contexts/AuthContext.jsx << 'EOF'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { supabase } from '../lib/supabase'
+
+const AuthContext = createContext(null)
+
+export function AuthProvider({ children }) {
+  const [user, setUser]       = useState(null)
+  const [profile, setProfile] = useState(null)
+  const [role, setRole]       = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  const fetchProfile = async (uid) => {
+    const { data } = await supabase.from('users').select('*').eq('id', uid).single()
+    if (data) { setProfile(data); setRole(data.role) }
+  }
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      if (session?.user) fetchProfile(session.user.id)
+      setLoading(false)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUser(session?.user ?? null)
+      if (session?.user) fetchProfile(session.user.id)
+      else { setProfile(null); setRole(null) }
+      setLoading(false)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  const signIn  = async (email, pw) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pw })
+    if (error) throw error
+  }
+  const signOut = async () => {
+    await supabase.auth.signOut()
+    setUser(null); setProfile(null); setRole(null)
+  }
+  const can = (roles) => roles.includes(role)
+
+  return (
+    <AuthContext.Provider value={{ user, profile, role, loading, signIn, signOut, can }}>
+      {!loading && children}
+    </AuthContext.Provider>
+  )
+}
+
+export const useAuth = () => {
+  const ctx = useContext(AuthContext)
+  if (!ctx) throw new Error('useAuth ต้องใช้ภายใน AuthProvider')
+  return ctx
+}
+EOF
+
+# ── 12. src/components/Layout.jsx ────────────────────────
+cat > src/components/Layout.jsx << 'EOF'
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+
+const ROLE_LABEL = {
+  admin:'ผู้ดูแลระบบ', pharmacist:'เภสัชกร',
+  manager:'ผู้จัดการ', staff:'พนักงานขาย',
+}
+const NAV = [
+  { to:'/stock',     icon:'🧪', label:'สต๊อกยา',       roles:['admin','pharmacist','manager','staff'] },
+  { to:'/pos',       icon:'🛒', label:'ขายยา (POS)',   roles:['admin','pharmacist','manager','staff'] },
+  { to:'/purchase',  icon:'🚚', label:'จัดซื้อ',       roles:['admin','pharmacist','manager'] },
+  { to:'/reports',   icon:'📋', label:'รายงาน ขย.',    roles:['admin','pharmacist'] },
+  { to:'/customers', icon:'👤', label:'ลูกค้า (CRM)',  roles:['admin','pharmacist','manager','staff'] },
+  { to:'/patients',  icon:'🩺', label:'ติดตามผู้ป่วย', roles:['admin','pharmacist','manager'] },
+  { to:'/staff',     icon:'👔', label:'พนักงาน',       roles:['admin','manager'] },
+  { to:'/analytics', icon:'📊', label:'รายงานธุรกิจ',  roles:['admin','manager'] },
+]
+
+export default function Layout() {
+  const { profile, role, signOut } = useAuth()
+  const navigate = useNavigate()
+  const nav = NAV.filter(n => n.roles.includes(role))
+
+  return (
+    <div style={{display:'flex',minHeight:'100vh'}}>
+      <aside style={{
+        width:220,background:'#0f172a',color:'#e2e8f0',
+        display:'flex',flexDirection:'column',
+        position:'fixed',top:0,bottom:0,left:0,zIndex:30,overflowY:'auto'
+      }}>
+        <div style={{padding:'20px 16px',borderBottom:'1px solid #1e293b'}}>
+          <div style={{fontSize:18,fontWeight:700,color:'#5eead4'}}>💊 PMS</div>
+          <div style={{fontSize:11,color:'#64748b',marginTop:2}}>ระบบบริหารร้านขายยา</div>
+        </div>
+        <nav style={{flex:1,padding:'12px 8px'}}>
+          {nav.map(n => (
+            <NavLink key={n.to} to={n.to} style={({isActive})=>({
+              display:'flex',alignItems:'center',gap:10,
+              padding:'9px 12px',borderRadius:7,marginBottom:2,
+              textDecoration:'none',fontSize:13,fontWeight:500,
+              background:isActive?'#0f766e':'transparent',
+              color:isActive?'#fff':'#94a3b8',
+            })}>
+              <span>{n.icon}</span><span>{n.label}</span>
+            </NavLink>
+          ))}
+        </nav>
+        <div style={{padding:'12px 16px',borderTop:'1px solid #1e293b'}}>
+          <div style={{fontSize:12,color:'#5eead4',fontWeight:600}}>{profile?.full_name||'ผู้ใช้งาน'}</div>
+          <div style={{fontSize:11,color:'#64748b',marginBottom:8}}>{ROLE_LABEL[role]||role}</div>
+          <button onClick={async()=>{await signOut();navigate('/login')}} style={{
+            width:'100%',padding:'7px',borderRadius:6,border:'none',
+            background:'#1e293b',color:'#94a3b8',cursor:'pointer',fontSize:12,
+          }}>🚪 ออกจากระบบ</button>
+        </div>
+      </aside>
+      <main style={{marginLeft:220,flex:1,padding:24,minHeight:'100vh'}}>
+        <Outlet />
+      </main>
+    </div>
+  )
+}
+EOF
+
+# ── 13. src/pages/Login.jsx ───────────────────────────────
+cat > src/pages/Login.jsx << 'EOF'
+import { useState } from 'react'
+import { useAuth } from '../contexts/AuthContext'
+
+export default function Login() {
+  const { signIn } = useAuth()
+  const [email, setEmail]       = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError]       = useState('')
+  const [loading, setLoading]   = useState(false)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault(); setError(''); setLoading(true)
+    try { await signIn(email, password) }
+    catch { setError('อีเมลหรือรหัสผ่านไม่ถูกต้อง') }
+    finally { setLoading(false) }
+  }
+
+  const inp = {
+    width:'100%',padding:'10px 12px',borderRadius:7,
+    border:'1px solid #e2e8f0',fontSize:14,marginTop:4,
+    outline:'none',fontFamily:'inherit',
+  }
+  return (
+    <div style={{
+      minHeight:'100vh',
+      background:'linear-gradient(135deg,#0f766e,#0f172a)',
+      display:'flex',alignItems:'center',justifyContent:'center',
+    }}>
+      <div style={{background:'#fff',borderRadius:14,padding:36,width:360,boxShadow:'0 20px 60px rgba(0,0,0,0.3)'}}>
+        <div style={{textAlign:'center',marginBottom:28}}>
+          <div style={{fontSize:40,marginBottom:8}}>💊</div>
+          <h1 style={{fontSize:20,fontWeight:700,color:'#0f172a'}}>ระบบบริหารร้านขายยา</h1>
+          <p style={{fontSize:12,color:'#64748b',marginTop:4}}>ขย. ประเภท 1</p>
+        </div>
+        <form onSubmit={handleSubmit}>
+          <div style={{marginBottom:14}}>
+            <label style={{fontSize:13,fontWeight:600,color:'#334155'}}>อีเมล</label>
+            <input type="email" value={email} style={inp}
+              onChange={e=>setEmail(e.target.value)} placeholder="pharmacist@example.com" required/>
+          </div>
+          <div style={{marginBottom:20}}>
+            <label style={{fontSize:13,fontWeight:600,color:'#334155'}}>รหัสผ่าน</label>
+            <input type="password" value={password} style={inp}
+              onChange={e=>setPassword(e.target.value)} placeholder="••••••••" required/>
+          </div>
+          {error && <div style={{background:'#fee2e2',border:'1px solid #fca5a5',borderRadius:6,
+            padding:'8px 12px',fontSize:12,color:'#dc2626',marginBottom:14}}>⚠️ {error}</div>}
+          <button type="submit" disabled={loading} style={{
+            width:'100%',padding:11,borderRadius:7,border:'none',
+            background:loading?'#94a3b8':'#0f766e',
+            color:'#fff',fontSize:14,fontWeight:600,
+            cursor:loading?'not-allowed':'pointer',fontFamily:'inherit',
+          }}>{loading?'กำลังเข้าสู่ระบบ...':'🔐 เข้าสู่ระบบ'}</button>
+        </form>
+      </div>
+    </div>
+  )
+}
+EOF
+
+# ── 14. Placeholder pages ─────────────────────────────────
+for page in Stock POS Purchase Reports Customers Patients Staff Analytics; do
+cat > src/pages/${page}.jsx << EOF
+export default function ${page}() {
+  return (
+    <div style={{padding:24}}>
+      <h1 style={{fontSize:22,fontWeight:700,color:'#0f172a',marginBottom:8}}>
+        ${page}
+      </h1>
+      <p style={{color:'#64748b'}}>กำลังพัฒนา...</p>
+    </div>
+  )
+}
+EOF
+done
+
+# ── 15. src/App.jsx ───────────────────────────────────────
+cat > src/App.jsx << 'EOF'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
+import Layout     from './components/Layout'
+import Login      from './pages/Login'
+import Stock      from './pages/Stock'
+import POS        from './pages/POS'
+import Purchase   from './pages/Purchase'
+import Reports    from './pages/Reports'
+import Customers  from './pages/Customers'
+import Patients   from './pages/Patients'
+import Staff      from './pages/Staff'
+import Analytics  from './pages/Analytics'
+
+function Guard({ children, roles }) {
+  const { user, role } = useAuth()
+  if (!user) return <Navigate to="/login" replace />
+  if (roles && !roles.includes(role)) return <Navigate to="/stock" replace />
+  return children
+}
+
+function AppRoutes() {
+  const { user } = useAuth()
+  return (
+    <Routes>
+      <Route path="/login" element={!user ? <Login /> : <Navigate to="/stock" />} />
+      <Route path="/" element={<Guard><Layout /></Guard>}>
+        <Route index element={<Navigate to="/stock" replace />} />
+        <Route path="stock"     element={<Stock />} />
+        <Route path="pos"       element={<POS />} />
+        <Route path="purchase"  element={<Guard roles={['admin','pharmacist','manager']}><Purchase /></Guard>} />
+        <Route path="reports"   element={<Guard roles={['admin','pharmacist']}><Reports /></Guard>} />
+        <Route path="customers" element={<Customers />} />
+        <Route path="patients"  element={<Guard roles={['admin','pharmacist','manager']}><Patients /></Guard>} />
+        <Route path="staff"     element={<Guard roles={['admin','manager']}><Staff /></Guard>} />
+        <Route path="analytics" element={<Guard roles={['admin','manager']}><Analytics /></Guard>} />
+      </Route>
+    </Routes>
+  )
+}
+
+export default function App() {
+  return (
+    <BrowserRouter basename="/pharmacy-pms">
+      <AuthProvider><AppRoutes /></AuthProvider>
+    </BrowserRouter>
+  )
+}
+EOF
+
+# ── 16. src/main.jsx ──────────────────────────────────────
+cat > src/main.jsx << 'EOF'
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode><App /></StrictMode>
+)
+EOF
+
+# ── 17. .github/workflows/deploy.yml ─────────────────────
+cat > .github/workflows/deploy.yml << 'EOF'
+name: Deploy to GitHub Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '20', cache: 'npm' }
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      - uses: actions/configure-pages@v4
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: './dist' }
+      - id: deployment
+        uses: actions/deploy-pages@v4
+EOF
+
+# ── 18. Build test ────────────────────────────────────────
+echo "🔨 ทดสอบ build..."
+npm run build
+
+# ── 19. Commit & Push ─────────────────────────────────────
+echo "⬆️  กำลัง commit และ push..."
+git add -A
+git commit -m "🏥 Initial pharmacy-pms setup (Phase 1)"
+git push
+
+echo ""
+echo "✅ Setup เสร็จแล้ว!"
+echo "📌 ขั้นตอนต่อไป:"
+echo "   1. ตั้งค่า Secrets ใน GitHub repo (ดู tab 'ตั้งค่า Secrets')"
+echo "   2. เปิด GitHub Pages (ดู tab 'เปิด GitHub Pages')"
+echo "   3. GitHub Actions จะ deploy อัตโนมัติ"</pre>
+
+<textarea id="scriptRaw" style="position:absolute;left:-9999px;opacity:0" readonly></textarea>
+</div>
+
+<!-- Tab 2: ตั้งค่า Secrets -->
+<div class="content" id="tab2">
+<div class="section">
+  <div class="step-box">
+    <h3>🔐 ตั้งค่า Supabase Secrets ใน GitHub</h3>
+    <div class="info" style="margin-bottom:16px">
+      ค่า Supabase ต้องเก็บเป็น Secret ใน GitHub เพราะ GitHub Actions ต้องใช้ตอน build
+    </div>
+    <div class="step"><div class="step-num">1</div><div class="step-body">
+      <div class="step-title">ไปที่ GitHub repo → <strong>Settings</strong></div>
+    </div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body">
+      <div class="step-title">เมนูซ้าย → <strong>Secrets and variables</strong> → <strong>Actions</strong></div>
+    </div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body">
+      <div class="step-title">กด <strong>"New repository secret"</strong> แล้วเพิ่ม 2 ค่านี้:</div>
+      <div style="margin-top:10px;display:grid;gap:8px">
+        <div style="background:#020617;border:1px solid #1e293b;border-radius:6px;padding:10px 14px">
+          <div style="font-family:monospace;color:#fde68a;font-size:12px;margin-bottom:4px">VITE_SUPABASE_URL</div>
+          <div style="font-size:12px;color:#94a3b8">ค่า: https://xxxx.supabase.co (จาก Supabase → Settings → API)</div>
+        </div>
+        <div style="background:#020617;border:1px solid #1e293b;border-radius:6px;padding:10px 14px">
+          <div style="font-family:monospace;color:#fde68a;font-size:12px;margin-bottom:4px">VITE_SUPABASE_ANON_KEY</div>
+          <div style="font-size:12px;color:#94a3b8">ค่า: eyJhbGci... (anon public key จาก Supabase)</div>
+        </div>
+      </div>
+    </div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body">
+      <div class="step-title">หลังเพิ่ม Secrets แล้ว ไปที่ tab <strong>Actions</strong> → กด <strong>"Re-run"</strong> workflow ล่าสุด</div>
+    </div></div>
+  </div>
+</div>
+</div>
+
+<!-- Tab 3: เปิด GitHub Pages -->
+<div class="content" id="tab3">
+<div class="section">
+  <div class="step-box">
+    <h3>🌐 เปิดใช้งาน GitHub Pages</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-body">
+      <div class="step-title">ไปที่ GitHub repo → <strong>Settings</strong></div>
+    </div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body">
+      <div class="step-title">เมนูซ้าย → <strong>Pages</strong></div>
+    </div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-body">
+      <div class="step-title">ตั้งค่า Source:</div>
+      <div style="background:#020617;border:1px solid #1e293b;border-radius:6px;padding:12px 14px;margin-top:8px;font-size:12px;color:#94a3b8;line-height:1.8">
+        Source: <span style="color:#86efac">GitHub Actions</span> ✅ (ไม่ใช่ Deploy from branch)<br>
+        กด <strong style="color:#fff">Save</strong>
+      </div>
+    </div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-body">
+      <div class="step-title">รอ GitHub Actions ทำงาน (~2-3 นาที)</div>
+      <div class="step-desc">ดูความคืบหน้าที่ tab <strong>Actions</strong> ใน repo</div>
+    </div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-body">
+      <div class="step-title">เว็บจะใช้งานได้ที่:</div>
+      <div class="ok-box">
+        🌐 https://<span style="color:#fde68a">USERNAME</span>.github.io/pharmacy-pms/<br>
+        <span style="font-size:11px;color:#86efac">(เปลี่ยน USERNAME เป็น GitHub username ของคุณ)</span>
+      </div>
+    </div></div>
+  </div>
+
+  <div class="step-box">
+    <h3>👤 สร้าง User แรก (Admin) ใน Supabase</h3>
+    <div class="warn">ต้องทำหลังจาก deploy สำเร็จแล้วเท่านั้น</div>
+    <div class="step" style="margin-top:12px"><div class="step-num">1</div><div class="step-body">
+      <div class="step-title">Supabase Dashboard → <strong>Authentication</strong> → <strong>Users</strong> → <strong>Add user</strong></div>
+      <div class="step-desc">ใส่ email + password สำหรับ Admin</div>
+    </div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body">
+      <div class="step-title">จากนั้น insert ข้อมูลลง public.users ที่ SQL Editor</div>
+      <div class="cmd-block">
+        <div class="cmd" id="insertCmd">INSERT INTO public.users (id, full_name, role)
+VALUES (
+  'UUID-จาก-Auth-Users-ข้างบน',
+  'ชื่อผู้ดูแลระบบ',
+  'admin'
+);</div>
+        <button class="copy-btn" onclick="copyEl('insertCmd',this)">📋</button>
+      </div>
+      <div class="info" style="margin-top:8px">UUID หาได้จาก Supabase → Authentication → Users → คลิกที่ user → copy User UID</div>
+    </div></div>
+  </div>
+</div>
+</div>
+
+<script>
+function show(n){
+  document.querySelectorAll('.content').forEach((c,i)=>c.classList.toggle('active',i===n))
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===n))
+}
+function copyEl(id,btn){
+  const el=document.getElementById(id)
+  const ta=document.createElement('textarea')
+  ta.value=el.innerText; document.body.appendChild(ta); ta.select()
+  document.execCommand('copy'); document.body.removeChild(ta)
+  const orig=btn.textContent; btn.textContent='✅'; btn.classList.add('ok')
+  setTimeout(()=>{btn.textContent=orig;btn.classList.remove('ok')},2000)
+}
+function copyMain(){
+  const ta=document.createElement('textarea')
+  ta.value=document.getElementById('mainScript').innerText
+  document.body.appendChild(ta); ta.select()
+  document.execCommand('copy'); document.body.removeChild(ta)
+  const btn=document.getElementById('mainCopyBtn')
+  btn.textContent='✅ คัดลอกแล้ว!'; btn.classList.add('ok')
+  setTimeout(()=>{btn.textContent='📋 คัดลอก Script ทั้งหมด';btn.classList.remove('ok')},2000)
+}
+</script>
+</body>
+</html>
+ENDOFFILE
+echo "done: $(wc -c < /mnt/user-data/outputs/pharmacy_bootstrap.html) bytes"
