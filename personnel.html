@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>แบบฟอร์มข้อมูลส่วนตัว update</title>
+  <title>แบบฟอร์มข้อมูลส่วนตัว</title>
   <style>
     body { font-family: sans-serif; max-width: 400px; margin: 60px auto; padding: 0 20px; }
     h2 { text-align: center; }
@@ -38,7 +38,7 @@
   <div id="status"></div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwILzk3emAzQmiVJOLNnhOCRQPzoQTRZfRaWMC1BhXbhpMoTR71_IvB4n1JovSjKgDtpg/exec"; // ← ใส่ URL ของคุณตรงนี้
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwfaOpFxxx_BEc2kNUOlDpPIFz-4bguk4ILTyoFzWVwk4E4I91JhPKM0ddOUjejBAccqw/exec"; // ← ใส่ URL ของคุณตรงนี้
 
     function submitForm() {
       var firstName = document.getElementById("firstName").value.trim();
@@ -58,19 +58,23 @@
 
       fetch(WEB_APP_URL, {
         method: "POST",
-        mode: "no-cors",
         body: JSON.stringify({ firstName, lastName, age, gender })
       })
       .then(res => res.json())
       .then(data => {
-        status.textContent = data.result ;
+        if (data.result === "success") {
           status.style.color = "green";
           status.textContent = "✅ บันทึกข้อมูลสำเร็จ!";
           document.getElementById("firstName").value = "";
           document.getElementById("lastName").value = "";
           document.getElementById("age").value = "";
           document.getElementById("gender").value = "";
+        }
       })
+      .catch(() => {
+        status.style.color = "red";
+        status.textContent = "❌ เกิดข้อผิดพลาด กรุณาลองใหม่";
+      });
     }
   </script>
 </body>
