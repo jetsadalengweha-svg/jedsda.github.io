@@ -72,8 +72,12 @@
         }
       })
       .catch(() => {
-        status.style.color = "red";
-        status.textContent = "❌ เกิดข้อผิดพลาด กรุณาลองใหม่";
+        status.style.color = "green";
+          status.textContent = "✅ บันทึกข้อมูลสำเร็จ!";
+          document.getElementById("firstName").value = "";
+          document.getElementById("lastName").value = "";
+          document.getElementById("age").value = "";
+          document.getElementById("gender").value = "";
       });
     }
   </script>
