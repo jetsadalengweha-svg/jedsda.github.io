@@ -63,6 +63,7 @@
       })
       .then(res => res.json())
       .then(data => {
+        status.textContent = data.result ;
         if (data.result === "success") {
           status.style.color = "green";
           status.textContent = "✅ บันทึกข้อมูลสำเร็จ!";
