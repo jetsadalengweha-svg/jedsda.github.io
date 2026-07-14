@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แดชบอร์ดสรุปข้อมูลผู้ป่วย</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0E1A21;
+    --panel: #14242C;
+    --card: #182A33;
+    --card-hover: #1D3138;
+    --border: #223640;
+    --border-strong: #2C4753;
+    --teal: #3FBDA3;
+    --text: #EAF2F0;
+    --text-2: #9AB0AC;
+    --text-3: #6C817D;
+    --amber: #E8A33D;
+    --amber-bg: #3A2C14;
+    --red: #E2604F;
+    --red-bg: #3A1E19;
+    --green: #6FBF73;
+    --green-bg: #1B3320;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans Thai', sans-serif; font-size:14px; line-height:1.6;
+  }
+  .num{font-family:'IBM Plex Mono', monospace;}
+  .wrap{max-width:1280px; margin:0 auto; padding:28px 24px 60px;}
+
+  header.top{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom:1px solid var(--border); padding-bottom:18px; margin-bottom:22px;
+    gap:16px; flex-wrap:wrap;
+  }
+  header.top h1{font-size:20px; font-weight:600; margin:0 0 4px;}
+  header.top p{margin:0; color:var(--text-2); font-size:13px;}
+  .meta{text-align:right; color:var(--text-3); font-size:12px;}
+
+  .upload-zone{
+    border:1.5px dashed var(--border-strong); border-radius:14px; padding:48px 24px;
+    text-align:center; background:var(--card); margin-bottom:24px; transition:border-color .15s, background .15s;
+  }
+  .upload-zone.drag{border-color:var(--teal); background:var(--card-hover);}
+  .upload-zone h2{font-size:16px; font-weight:600; margin:0 0 8px;}
+  .upload-zone p{color:var(--text-2); font-size:13px; margin:0 0 20px;}
+  .upload-zone input[type=file]{display:none;}
+  .upload-btn{
+    display:inline-block; background:var(--teal); color:#06211B; font-weight:600;
+    padding:10px 22px; border-radius:8px; cursor:pointer; font-size:13.5px; border:none;
+  }
+  .upload-btn:hover{background:#4ED2B5;}
+  .upload-hint{margin-top:18px; font-size:12px; color:var(--text-3); line-height:1.8;}
+  .upload-hint b{color:var(--text-2);}
+
+  .toolbar-top{display:none; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;}
+  .toolbar-top.show{display:flex;}
+  .file-chip{
+    display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--border);
+    border-radius:20px; padding:6px 14px; font-size:12.5px; color:var(--text-2);
+  }
+  .file-chip .fname{color:var(--text); font-weight:500;}
+  button{
+    font-family:inherit; font-size:13px; cursor:pointer; border-radius:6px;
+    border:1px solid var(--border-strong); background:var(--panel); color:var(--text);
+    padding:8px 14px; transition:background .15s;
+  }
+  button:hover{background:var(--card-hover);}
+
+  #report{display:none;}
+  #report.show{display:block;}
+
+  .stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;}
+  .stat{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px;}
+  .stat .label{color:var(--text-2); font-size:12.5px; margin-bottom:8px;}
+  .stat .value{font-size:24px; font-weight:600; font-family:'IBM Plex Mono',monospace; color:var(--teal);}
+  .stat .sub{color:var(--text-3); font-size:11.5px; margin-top:4px;}
+
+  .charts-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px;}
+  .chart-card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px;}
+  .chart-card h2{font-size:12.5px; font-weight:600; margin:0 0 12px; color:var(--text-2); text-transform:uppercase; letter-spacing:.03em;}
+  .chart-box{position:relative; height:190px;}
+  .chart-card.empty{display:flex; align-items:center; justify-content:center; color:var(--text-3); font-size:12.5px;}
+
+  .table-section h2{font-size:14px; font-weight:600; margin:0 0 10px; color:var(--text-2); text-transform:uppercase; letter-spacing:.04em;}
+  .toolbar{display:flex; gap:10px; align-items:center; margin-bottom:14px; flex-wrap:wrap;}
+  input[type=text], select{
+    background:var(--panel); border:1px solid var(--border); color:var(--text);
+    border-radius:6px; padding:8px 10px; font-family:inherit; font-size:13px;
+  }
+  input[type=text]:focus, select:focus{outline:1px solid var(--teal); border-color:var(--teal);}
+
+  .table-scroll{overflow-x:auto; border:1px solid var(--border); border-radius:var(--radius);}
+  table{width:100%; border-collapse:collapse; background:var(--card);}
+  thead th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--text-3); background:var(--panel); padding:10px 12px; border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  tbody td{padding:9px 12px; border-bottom:1px solid var(--border); font-size:13px; white-space:nowrap;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--card-hover);}
+  .row-count{color:var(--text-3); font-size:12px; margin-top:8px;}
+
+  .footnote{margin-top:16px; font-size:11.5px; color:var(--text-3); border-top:1px solid var(--border); padding-top:12px;}
+
+  @media (max-width:900px){
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    .charts-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>แดชบอร์ดสรุปข้อมูลผู้ป่วย</h1>
+      <p>อัปโหลดไฟล์เพื่อสร้างรายงานสรุป — ไม่มีการเก็บข้อมูลไว้ในระบบ ข้อมูลอยู่ในเบราว์เซอร์ชั่วคราวเท่านั้น</p>
+    </div>
+    <div class="meta" id="header-meta"></div>
+  </header>
+
+  <div class="toolbar-top" id="toolbar-top">
+    <div class="file-chip">
+      <i class="ti ti-file"></i>
+      <span>ไฟล์: <span class="fname" id="current-filename"></span></span>
+    </div>
+    <button id="btn-reset">อัปโหลดไฟล์ใหม่ / ล้างข้อมูล</button>
+  </div>
+
+  <div class="upload-zone" id="upload-zone">
+    <h2>อัปโหลดไฟล์ข้อมูลผู้ป่วยเพื่อดูสรุป</h2>
+    <p>รองรับไฟล์ .csv และ .xlsx — ลากไฟล์มาวาง หรือกดปุ่มด้านล่าง</p>
+    <label class="upload-btn" for="file-input">เลือกไฟล์</label>
+    <input type="file" id="file-input" accept=".csv,.xlsx,.xls">
+    <div class="upload-hint">
+      <b>มาจาก Google ชีท?</b> เปิดชีท → File → Download → เลือก Microsoft Excel (.xlsx) หรือ Comma Separated Values (.csv) แล้วอัปโหลดไฟล์ที่ได้ที่นี่<br>
+      แถวแรกของไฟล์ต้องเป็นหัวตาราง (ชื่อคอลัมน์) — ระบบจะอ่านคอลัมน์ตามที่มีในไฟล์จริง ไม่จำกัดโครงสร้างตายตัว
+    </div>
+  </div>
+
+  <div id="report">
+    <section class="stat-grid" id="stat-grid"></section>
+    <section class="charts-grid" id="charts-grid"></section>
+    <section class="table-section">
+      <h2>ตารางข้อมูลทั้งหมด</h2>
+      <div class="toolbar">
+        <input type="text" id="search" placeholder="ค้นหาในทุกคอลัมน์">
+        <select id="filter-col-1"></select>
+        <select id="filter-col-2"></select>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr id="table-head"></tr></thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div class="row-count" id="row-count"></div>
+      <div class="footnote">
+        รายงานนี้สร้างจากไฟล์ที่อัปโหลดในเซสชันนี้เท่านั้น ไม่มีการบันทึกลงระบบหรือส่งข้อมูลออกไปที่ใด — ปิดหน้านี้หรือรีเฟรช ข้อมูลจะหายไปทั้งหมด หากต้องการดูอีกครั้ง อัปโหลดไฟล์ใหม่
+      </div>
+    </section>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+let headers = [];
+let records = [];
+let columnInfo = {};
+let charts = [];
+const CHART_TEXT = '#9AB0AC';
+const CHART_GRID = '#223640';
+const CHARTS_AVAILABLE = typeof Chart !== 'undefined';
+if(CHARTS_AVAILABLE){
+  Chart.defaults.font.family = "'IBM Plex Sans Thai', sans-serif";
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = CHART_TEXT;
+}
+
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  for(let i = 0; i < text.length; i++){
+    const c = text[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if(c === '"') inQuotes = true;
+      else if(c === ','){ row.push(field); field = ''; }
+      else if(c === '\n'){ row.push(field); rows.push(row); row = []; field = ''; }
+      else field += c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r => r.some(c => c.trim() !== ''));
+}
+
+async function readFile(file){
+  const ext = file.name.split('.').pop().toLowerCase();
+  if(ext === 'csv'){
+    const text = await file.text();
+    return parseCSV(text);
+  } else {
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, {type:'array', cellDates:true});
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(sheet, {header:1, raw:false, defval:''});
+    return rows.filter(r => r.some(c => String(c).trim() !== ''));
+  }
+}
+
+function isNumeric(v){
+  if(v === '' || v === null || v === undefined) return false;
+  return !isNaN(Number(String(v).replace(/,/g,'')));
+}
+
+function looksLikeDate(v){
+  return /^\d{4}-\d{1,2}-\d{1,2}/.test(String(v).trim());
+}
+
+function analyzeColumns(){
+  columnInfo = {};
+  headers.forEach(h => {
+    const values = records.map(r => r[h]).filter(v => v !== '' && v !== null && v !== undefined);
+    const numericCount = values.filter(isNumeric).length;
+    const dateCount = values.filter(looksLikeDate).length;
+    const uniqueVals = [...new Set(values.map(v => String(v)))];
+    let type = 'text';
+    if(values.length && dateCount / values.length > 0.7) type = 'date';
+    else if(values.length && numericCount / values.length > 0.85) type = 'numeric';
+    else if(uniqueVals.length <= 12 && uniqueVals.length > 0 && uniqueVals.length < values.length) type = 'categorical';
+    columnInfo[h] = { type, values, unique: uniqueVals, filled: values.length, missing: records.length - values.length };
+  });
+}
+
+function guessName(patterns){
+  return headers.find(h => patterns.some(p => h.toLowerCase().includes(p)));
+}
+
+function renderStats(){
+  const total = records.length;
+  const totalCols = headers.length;
+  let missingTotal = 0;
+  headers.forEach(h => missingTotal += columnInfo[h].missing);
+  const idCol = guessName(['hn', 'id', 'รหัส']);
+  const uniqueIds = idCol ? new Set(records.map(r => r[idCol]).filter(v => v)).size : null;
+
+  const cards = [
+    { label: 'จำนวนแถวข้อมูลทั้งหมด', value: total, sub: 'จากไฟล์ที่อัปโหลด' },
+    { label: 'จำนวนคอลัมน์', value: totalCols, sub: 'ตามที่มีในไฟล์ต้นฉบับ' },
+  ];
+  if(idCol){
+    cards.push({ label: `จำนวนไม่ซ้ำ (${idCol})`, value: uniqueIds, sub: 'นับจากคอลัมน์รหัสที่ตรวจพบ' });
+  }
+  cards.push({ label: 'ช่องข้อมูลที่ว่าง', value: missingTotal, sub: `จากทั้งหมด ${total * totalCols} ช่อง` });
+
+  document.getElementById('stat-grid').innerHTML = cards.slice(0,4).map(c => `
+    <div class="stat">
+      <div class="label">${c.label}</div>
+      <div class="value">${c.value}</div>
+      <div class="sub">${c.sub}</div>
+    </div>
+  `).join('');
+}
+
+function renderCharts(){
+  charts.forEach(c => c.destroy());
+  charts = [];
+  const grid = document.getElementById('charts-grid');
+  grid.innerHTML = '';
+  if(!CHARTS_AVAILABLE){
+    grid.innerHTML = '<div class="chart-card empty">ไม่สามารถโหลดไลบรารีกราฟได้ในขณะนี้ ตารางด้านล่างยังใช้งานได้ปกติ</div>';
+    return;
+  }
+
+  const dateCol = headers.find(h => columnInfo[h].type === 'date');
+  const catCols = headers.filter(h => columnInfo[h].type === 'categorical').slice(0, dateCol ? 2 : 3);
+
+  const cardsToBuild = [];
+  if(dateCol) cardsToBuild.push({type:'date', col:dateCol});
+  catCols.forEach(c => cardsToBuild.push({type:'cat', col:c}));
+
+  if(cardsToBuild.length === 0){
+    grid.innerHTML = '<div class="chart-card empty">ไม่พบคอลัมน์ที่เหมาะกับการทำกราฟสรุป (ต้องการคอลัมน์วันที่หรือคอลัมน์ที่มีค่าไม่ซ้ำน้อยกว่า 12 แบบ)</div>';
+    return;
+  }
+
+  cardsToBuild.forEach((item, i) => {
+    const cardId = 'chart-' + i;
+    const card = document.createElement('div');
+    card.className = 'chart-card';
+    card.innerHTML = `<h2>${item.type === 'date' ? 'จำนวนบันทึกต่อเดือน (' + item.col + ')' : 'การกระจาย: ' + item.col}</h2><div class="chart-box"><canvas id="${cardId}"></canvas></div>`;
+    grid.appendChild(card);
+
+    if(item.type === 'date'){
+      const counts = {};
+      records.forEach(r => {
+        const v = r[item.col];
+        if(!looksLikeDate(v)) return;
+        const key = String(v).slice(0,7);
+        counts[key] = (counts[key]||0) + 1;
+      });
+      const labels = Object.keys(counts).sort();
+      const ch = new Chart(document.getElementById(cardId), {
+        type: 'bar',
+        data: { labels, datasets: [{ data: labels.map(l => counts[l]), backgroundColor: '#3FBDA3', borderRadius: 4, maxBarThickness: 28 }] },
+        options: {
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { grid: { display:false }, ticks: { color: CHART_TEXT, maxRotation: 45, minRotation: 45 } },
+            y: { beginAtZero: true, ticks: { stepSize:1, color: CHART_TEXT }, grid: { color: CHART_GRID } }
+          }
+        }
+      });
+      charts.push(ch);
+    } else {
+      const counts = {};
+      records.forEach(r => {
+        const v = r[item.col];
+        if(v === '' || v === null || v === undefined) return;
+        counts[v] = (counts[v]||0) + 1;
+      });
+      const palette = ['#3FBDA3','#E8A33D','#E2604F','#6FBF73','#8E8FE2','#E27FB5','#4FA3D1','#C9A0E8'];
+      const labels = Object.keys(counts);
+      const ch = new Chart(document.getElementById(cardId), {
+        type: 'doughnut',
+        data: { labels, datasets: [{ data: labels.map(l => counts[l]), backgroundColor: labels.map((_,idx) => palette[idx % palette.length]), borderColor: '#182A33', borderWidth: 2 }] },
+        options: { maintainAspectRatio: false, plugins: { legend: { position:'bottom', labels:{ boxWidth:10, padding:8, font:{size:11} } } } }
+      });
+      charts.push(ch);
+    }
+  });
+}
+
+function populateFilterDropdown(select, col){
+  select.innerHTML = `<option value="all">${col ? 'ทั้งหมด: ' + col : 'ไม่มีตัวกรอง'}</option>`;
+  if(!col) { select.disabled = true; return; }
+  select.disabled = false;
+  columnInfo[col].unique.forEach(v => {
+    select.innerHTML += `<option value="${v}">${v}</option>`;
+  });
+}
+
+function renderTableHead(){
+  document.getElementById('table-head').innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+}
+
+function renderTable(){
+  const search = document.getElementById('search').value.trim().toLowerCase();
+  const f1col = document.getElementById('filter-col-1').dataset.col;
+  const f1val = document.getElementById('filter-col-1').value;
+  const f2col = document.getElementById('filter-col-2').dataset.col;
+  const f2val = document.getElementById('filter-col-2').value;
+
+  let rows = records.filter(r => {
+    const matchSearch = !search || headers.some(h => String(r[h]).toLowerCase().includes(search));
+    const matchF1 = f1val === 'all' || !f1col || String(r[f1col]) === f1val;
+    const matchF2 = f2val === 'all' || !f2col || String(r[f2col]) === f2val;
+    return matchSearch && matchF1 && matchF2;
+  });
+
+  document.getElementById('table-body').innerHTML = rows.slice(0, 500).map(r => `
+    <tr>${headers.map(h => `<td>${r[h] ?? ''}</td>`).join('')}</tr>
+  `).join('');
+  document.getElementById('row-count').textContent = `แสดง ${Math.min(rows.length,500)} จาก ${rows.length} แถวที่ตรงเงื่อนไข (ทั้งหมด ${records.length} แถว)`;
+}
+
+function renderReport(filename){
+  analyzeColumns();
+  renderStats();
+  renderCharts();
+  renderTableHead();
+
+  const catCols = headers.filter(h => columnInfo[h].type === 'categorical');
+  const f1 = document.getElementById('filter-col-1');
+  const f2 = document.getElementById('filter-col-2');
+  f1.dataset.col = catCols[0] || '';
+  f2.dataset.col = catCols[1] || '';
+  populateFilterDropdown(f1, catCols[0]);
+  populateFilterDropdown(f2, catCols[1]);
+
+  renderTable();
+
+  document.getElementById('current-filename').textContent = filename;
+  document.getElementById('toolbar-top').classList.add('show');
+  document.getElementById('upload-zone').style.display = 'none';
+  document.getElementById('report').classList.add('show');
+  document.getElementById('header-meta').textContent = 'สร้างรายงานเมื่อ ' + new Date().toLocaleString('th-TH');
+}
+
+async function handleFile(file){
+  try{
+    const rows = await readFile(file);
+    if(rows.length < 2){
+      alert('ไม่พบข้อมูลในไฟล์ หรือไฟล์ไม่มีแถวข้อมูลนอกเหนือจากหัวตาราง');
+      return;
+    }
+    headers = rows[0].map(h => String(h).trim()).filter(h => h !== '');
+    records = rows.slice(1).map(row => {
+      const rec = {};
+      headers.forEach((h, i) => { rec[h] = row[i] !== undefined ? String(row[i]).trim() : ''; });
+      return rec;
+    });
+    renderReport(file.name);
+  } catch(e){
+    console.error(e);
+    alert('ไม่สามารถอ่านไฟล์นี้ได้ กรุณาตรวจสอบว่าเป็นไฟล์ .csv หรือ .xlsx ที่ถูกต้อง');
+  }
+}
+
+function resetDashboard(){
+  headers = []; records = []; columnInfo = {};
+  charts.forEach(c => c.destroy()); charts = [];
+  document.getElementById('report').classList.remove('show');
+  document.getElementById('toolbar-top').classList.remove('show');
+  document.getElementById('upload-zone').style.display = 'block';
+  document.getElementById('header-meta').textContent = '';
+  document.getElementById('file-input').value = '';
+}
+
+const zone = document.getElementById('upload-zone');
+const fileInput = document.getElementById('file-input');
+fileInput.addEventListener('change', e => { if(e.target.files[0]) handleFile(e.target.files[0]); });
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag');
+  if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+document.getElementById('btn-reset').addEventListener('click', resetDashboard);
+document.getElementById('search').addEventListener('input', renderTable);
+document.getElementById('filter-col-1').addEventListener('change', renderTable);
+document.getElementById('filter-col-2').addEventListener('change', renderTable);
+</script>
+</body>
+</html>
