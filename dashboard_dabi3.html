@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบติดตามการใช้ยา Dabigatran</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0E1A21;
+    --panel: #14242C;
+    --card: #182A33;
+    --card-hover: #1D3138;
+    --border: #223640;
+    --border-strong: #2C4753;
+    --teal: #3FBDA3;
+    --teal-dim: #245245;
+    --text: #EAF2F0;
+    --text-2: #9AB0AC;
+    --text-3: #6C817D;
+    --amber: #E8A33D;
+    --amber-bg: #3A2C14;
+    --red: #E2604F;
+    --red-bg: #3A1E19;
+    --green: #6FBF73;
+    --green-bg: #1B3320;
+    --radius: 10px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans Thai', sans-serif;
+    font-size:14px;
+    line-height:1.6;
+  }
+  .num{font-family:'IBM Plex Mono', monospace;}
+  .wrap{max-width:1280px; margin:0 auto; padding:28px 24px 60px;}
+
+  header.top{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    border-bottom:1px solid var(--border); padding-bottom:18px; margin-bottom:22px;
+    gap:16px; flex-wrap:wrap;
+  }
+  header.top h1{font-size:20px; font-weight:600; margin:0 0 4px;}
+  header.top p{margin:0; color:var(--text-2); font-size:13px;}
+  .meta{text-align:right; color:var(--text-3); font-size:12px;}
+  .meta .dot{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--green); margin-right:6px;}
+  .meta .dot.off{background:var(--text-3);}
+
+  .stat-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;}
+  .stat{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px;}
+  .stat .label{color:var(--text-2); font-size:12.5px; margin-bottom:8px;}
+  .stat .value{font-size:26px; font-weight:600; font-family:'IBM Plex Mono',monospace;}
+  .stat .value.amber{color:var(--amber);}
+  .stat .value.red{color:var(--red);}
+  .stat .value.teal{color:var(--teal);}
+  .stat .sub{color:var(--text-3); font-size:11.5px; margin-top:4px;}
+
+  .charts-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:22px;}
+  .chart-card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px;}
+  .chart-card h2{font-size:12.5px; font-weight:600; margin:0 0 12px; color:var(--text-2); text-transform:uppercase; letter-spacing:.03em;}
+  .chart-box{position:relative; height:190px;}
+  @media (max-width:900px){ .charts-grid{grid-template-columns:1fr;} }
+
+  .alerts{margin-bottom:22px;}
+  .alerts h2, .table-section h2{font-size:14px; font-weight:600; margin:0 0 10px; color:var(--text-2); text-transform:uppercase; letter-spacing:.04em;}
+  .alert-row{
+    display:flex; align-items:center; gap:12px;
+    background:var(--card); border:1px solid var(--border); border-left:3px solid var(--red);
+    border-radius:6px; padding:10px 14px; margin-bottom:8px; font-size:13px;
+  }
+  .alert-row.amber{border-left-color:var(--amber);}
+  .alert-row b{font-weight:600;}
+  .alert-row .tag{
+    margin-left:auto; font-size:11px; padding:3px 8px; border-radius:20px;
+    background:var(--red-bg); color:var(--red); font-family:'IBM Plex Mono',monospace; white-space:nowrap;
+  }
+  .alert-row.amber .tag{background:var(--amber-bg); color:var(--amber);}
+  .no-alert{color:var(--text-3); font-size:13px; padding:10px 2px;}
+
+  .toolbar{display:flex; gap:10px; align-items:center; margin-bottom:14px; flex-wrap:wrap; justify-content:space-between;}
+  .toolbar-left{display:flex; gap:8px; flex-wrap:wrap;}
+  input[type=text], select{
+    background:var(--panel); border:1px solid var(--border); color:var(--text);
+    border-radius:6px; padding:8px 10px; font-family:inherit; font-size:13px;
+  }
+  input[type=text]:focus, select:focus{outline:1px solid var(--teal); border-color:var(--teal);}
+  button{
+    font-family:inherit; font-size:13px; cursor:pointer; border-radius:6px;
+    border:1px solid var(--border-strong); background:var(--panel); color:var(--text);
+    padding:8px 14px; transition:background .15s;
+  }
+  button:hover{background:var(--card-hover);}
+  button.primary{background:var(--teal); border-color:var(--teal); color:#06211B; font-weight:600;}
+  button.primary:hover{background:#4ED2B5;}
+
+  table{width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); overflow:hidden;}
+  thead th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.03em;
+    color:var(--text-3); background:var(--panel); padding:10px 12px; border-bottom:1px solid var(--border); white-space:nowrap;
+  }
+  tbody td{padding:11px 12px; border-bottom:1px solid var(--border); font-size:13px; vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--card-hover);}
+  .pname{font-weight:500;}
+  .phn{color:var(--text-3); font-size:11.5px;}
+
+  .crcl-wrap{display:flex; align-items:center; gap:8px;}
+  .crcl-bar{width:60px; height:6px; border-radius:4px; background:var(--panel); overflow:hidden; border:1px solid var(--border);}
+  .crcl-bar > div{height:100%; border-radius:4px;}
+  .crcl-val{font-family:'IBM Plex Mono',monospace; font-size:12.5px; min-width:30px;}
+
+  .badge{display:inline-block; font-size:11px; padding:3px 9px; border-radius:20px; font-family:'IBM Plex Mono',monospace; white-space:nowrap;}
+  .badge.ok{background:var(--green-bg); color:var(--green);}
+  .badge.warn{background:var(--amber-bg); color:var(--amber);}
+  .badge.danger{background:var(--red-bg); color:var(--red);}
+  .badge.neutral{background:var(--panel); color:var(--text-2); border:1px solid var(--border);}
+
+  .empty-state{padding:40px 20px; text-align:center; color:var(--text-3);}
+
+  .footnote{margin-top:16px; font-size:11.5px; color:var(--text-3); border-top:1px solid var(--border); padding-top:12px;}
+
+  /* ---- Upload gate ---- */
+  #dashboard{display:none;}
+  .upload-gate{
+    display:flex; align-items:center; justify-content:center;
+    min-height:70vh; padding:20px;
+  }
+  .upload-box{
+    width:100%; max-width:560px; background:var(--card); border:1px solid var(--border-strong);
+    border-radius:14px; padding:36px 32px; text-align:center;
+  }
+  .upload-box .icon{
+    width:52px; height:52px; margin:0 auto 18px; border-radius:50%;
+    background:var(--teal-dim); display:flex; align-items:center; justify-content:center;
+    color:var(--teal); font-size:22px; font-weight:700;
+  }
+  .upload-box h2{font-size:18px; margin:0 0 8px;}
+  .upload-box p{color:var(--text-2); font-size:13px; margin:0 0 22px;}
+  .upload-dropzone{
+    border:1.5px dashed var(--border-strong); border-radius:10px; padding:26px 16px;
+    margin-bottom:18px; cursor:pointer; transition:border-color .15s, background .15s;
+  }
+  .upload-dropzone:hover, .upload-dropzone.drag{border-color:var(--teal); background:rgba(63,189,163,0.06);}
+  .upload-dropzone .dz-title{font-size:13.5px; font-weight:500; margin-bottom:4px;}
+  .upload-dropzone .dz-sub{font-size:12px; color:var(--text-3);}
+  .upload-filename{font-size:12.5px; color:var(--teal); margin-top:10px; min-height:16px;}
+  .upload-error{font-size:12.5px; color:var(--red); margin-top:10px; min-height:16px;}
+  .upload-fields{
+    text-align:left; background:var(--panel); border:1px solid var(--border); border-radius:8px;
+    padding:12px 14px; margin-top:18px; font-size:11.5px; color:var(--text-3); line-height:1.7;
+  }
+  .upload-fields b{color:var(--text-2);}
+
+  @media (max-width:900px){
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    table{display:block; overflow-x:auto;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div>
+      <h1>ระบบติดตามการใช้ยา Dabigatran ในผู้ป่วยโรคซับซ้อน</h1>
+      <p>ตัวอย่างแดชบอร์ด (ข้อมูลจำลองเพื่อการสาธิต) — ไม่ใช่ข้อมูลผู้ป่วยจริง</p>
+    </div>
+    <div class="meta">
+      <div><span class="dot" id="conn-dot"></span><span id="conn-text">รอการอัปโหลดข้อมูล</span></div>
+      <div id="last-updated">อัปเดตล่าสุด —</div>
+    </div>
+  </header>
+
+  <!-- Upload gate: shown until a file has been uploaded and processed -->
+  <div class="upload-gate" id="upload-gate">
+    <div class="upload-box">
+      <div class="icon">↑</div>
+      <h2>อัปโหลดข้อมูลผู้ป่วยก่อนเริ่มใช้งาน</h2>
+      <p>เลือกไฟล์ .xlsx หรือ .csv ที่ส่งออกจากฐานข้อมูล เพื่อประมวลผลและแสดงแดชบอร์ด</p>
+
+      <div class="upload-dropzone" id="upload-dropzone">
+        <div class="dz-title">คลิกเพื่อเลือกไฟล์ หรือวางไฟล์ที่นี่</div>
+        <div class="dz-sub">รองรับ .xlsx, .xls, .csv</div>
+      </div>
+      <input type="file" id="gate-file-input" accept=".csv,.xlsx,.xls" style="display:none;">
+      <div class="upload-filename" id="upload-filename"></div>
+      <div class="upload-error" id="upload-error"></div>
+
+      <div class="upload-fields">
+        <b>หัวตาราง (แถวแรก) ที่ระบบรองรับ:</b><br>
+        hn, name, age, sex, weight, indication, comorbid, scr, dose, startDate, interacting, hasbled, lastLabDate, nextLabDate, bleedEvent, adherence, note
+      </div>
+    </div>
+  </div>
+
+  <!-- Main dashboard: hidden until data has been loaded -->
+  <div id="dashboard">
+
+    <section class="stat-grid" id="stat-grid"></section>
+
+    <section class="charts-grid">
+      <div class="chart-card">
+        <h2>สถานะผู้ป่วยโดยรวม</h2>
+        <div class="chart-box"><canvas id="chart-status"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h2>การกระจายค่า CrCl (mL/min)</h2>
+        <div class="chart-box"><canvas id="chart-crcl"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h2>ขนาดยาที่ใช้ในปัจจุบัน</h2>
+        <div class="chart-box"><canvas id="chart-dose"></canvas></div>
+      </div>
+    </section>
+
+    <section class="alerts">
+      <h2>รายการที่ต้องเฝ้าระวัง</h2>
+      <div id="alert-list"></div>
+    </section>
+
+    <section class="table-section">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <input type="text" id="search" placeholder="ค้นหา HN หรือชื่อผู้ป่วย">
+          <select id="filter-status">
+            <option value="all">สถานะทั้งหมด</option>
+            <option value="ปกติ">ปกติ</option>
+            <option value="เฝ้าระวัง">เฝ้าระวัง</option>
+            <option value="วิกฤต">วิกฤต</option>
+          </select>
+          <select id="filter-indication">
+            <option value="all">ข้อบ่งชี้ทั้งหมด</option>
+            <option value="AF">AF (หัวใจเต้นผิดจังหวะ)</option>
+            <option value="DVT/PE">DVT/PE</option>
+          </select>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <input type="file" id="csv-input" accept=".csv,.xlsx,.xls" style="display:none;">
+          <button id="btn-import">นำเข้า/อัปเดตข้อมูล (CSV/XLSX)</button>
+          <button id="btn-reupload">อัปโหลดไฟล์ใหม่ทั้งหมด</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ผู้ป่วย</th>
+            <th>อายุ/เพศ</th>
+            <th>ข้อบ่งชี้</th>
+            <th>โรคร่วม</th>
+            <th>Scr (mg/dL)</th>
+            <th>CrCl (mL/min)</th>
+            <th>ขนาดยา</th>
+            <th>ยาที่มีปฏิกิริยา</th>
+            <th>HAS-BLED</th>
+            <th>นัด Lab ถัดไป</th>
+            <th>สถานะ</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+      <div id="empty-state" class="empty-state" style="display:none;">ไม่พบข้อมูลผู้ป่วยตามเงื่อนไขที่เลือก</div>
+
+      <div class="footnote">
+        โครงสร้างข้อมูลดิบต่อ 1 แถว: HN, ชื่อ-สกุล, อายุ, เพศ, น้ำหนัก (กก.), ข้อบ่งชี้การใช้ยา, โรคร่วม/ภาวะซับซ้อน, Serum creatinine (Scr), ขนาดยาที่สั่ง, วันที่เริ่มยา, ยาที่ใช้ร่วมที่มีปฏิกิริยากับ P-gp, คะแนน HAS-BLED, วันที่ตรวจ Lab ล่าสุด, ผล Hb/Hct ล่าสุด, วันนัด Lab ถัดไป, ประวัติเลือดออก, สถานะการมาตามนัด, สถานะรวม, หมายเหตุ — ค่า CrCl คำนวณอัตโนมัติจากสูตร Cockcroft-Gault เพื่อใช้อ้างอิงเบื้องต้นเท่านั้น การปรับขนาดยาต้องอาศัยดุลยพินิจของแพทย์/เภสัชกร
+        <br><br>
+        นำเข้าจาก Google ชีท: เปิดชีท → File → Download → Comma Separated Values (.csv) หรือ Microsoft Excel (.xlsx) → กดปุ่ม "นำเข้า/อัปเดตข้อมูล" แล้วเลือกไฟล์ หัวตาราง (แถวแรก) ต้องตรงกับชื่อฟิลด์ในระบบ เช่น <span class="num">hn, name, age, sex, weight, indication, comorbid, scr, dose, startDate, interacting, hasbled, lastLabDate, nextLabDate, bleedEvent, adherence, note</span> ระบบจะจับคู่คอลัมน์ HN เดิม (อัปเดตข้อมูล) หรือเพิ่มแถวใหม่ถ้าไม่พบ HN ในระบบ
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/4.4.4/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const FIELDS = [
+  {key:'hn', label:'HN (รหัสผู้ป่วย)'},
+  {key:'name', label:'ชื่อ-สกุล'},
+  {key:'age', label:'อายุ (ปี)'},
+  {key:'sex', label:'เพศ'},
+  {key:'weight', label:'น้ำหนัก (กก.)'},
+  {key:'indication', label:'ข้อบ่งชี้การใช้ยา'},
+  {key:'comorbid', label:'โรคร่วม/ภาวะซับซ้อน'},
+  {key:'scr', label:'Serum creatinine (mg/dL)'},
+  {key:'dose', label:'ขนาดยาที่สั่ง'},
+  {key:'startDate', label:'วันที่เริ่มยา'},
+  {key:'interacting', label:'ยาที่ใช้ร่วมที่มีปฏิกิริยา (P-gp)'},
+  {key:'hasbled', label:'คะแนน HAS-BLED (0-9)'},
+  {key:'lastLabDate', label:'วันที่ตรวจ Lab ล่าสุด'},
+  {key:'nextLabDate', label:'วันนัด Lab ถัดไป'},
+  {key:'bleedEvent', label:'ประวัติเลือดออก'},
+  {key:'adherence', label:'สถานะการมาตามนัด'},
+  {key:'note', label:'หมายเหตุพยาบาล/เภสัชกร'},
+];
+
+let patients = [];
+const today = new Date('2026-07-14');
+
+function uid(){ return 'p_' + Math.random().toString(36).slice(2,9); }
+
+function calcCrCl(p){
+  const age = Number(p.age), weight = Number(p.weight), scr = Number(p.scr);
+  if(!age || !weight || !scr) return null;
+  let crcl = ((140 - age) * weight) / (72 * scr);
+  if(p.sex === 'หญิง') crcl *= 0.85;
+  return Math.round(crcl * 10) / 10;
+}
+
+// Strictly parses a yyyy-mm-dd string into a Date (UTC), returning null for anything else.
+// Avoids relying on the browser's lenient Date parsing, which can misread a bare
+// number (e.g. a leftover serial number) as a literal year.
+function parseISODateStrict(dateStr){
+  if(!dateStr) return null;
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(dateStr).trim());
+  if(!m) return null;
+  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3])));
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function formatThaiDate(dateStr){
+  const d = parseISODateStrict(dateStr);
+  if(!d) return dateStr ? String(dateStr) : '-';
+  return d.toLocaleDateString('th-TH', {day:'numeric', month:'short', year:'numeric', timeZone:'UTC'});
+}
+
+function daysUntil(dateStr){
+  const d = parseISODateStrict(dateStr);
+  if(!d) return null;
+  return Math.round((d - today) / 86400000);
+}
+
+function crclBadge(crcl){
+  if(crcl === null) return {cls:'neutral', txt:'ไม่มีข้อมูล', color:'var(--text-3)'};
+  if(crcl < 15) return {cls:'danger', txt:'ห้ามใช้', color:'var(--red)'};
+  if(crcl < 30) return {cls:'danger', txt:'เสี่ยงสูงมาก', color:'var(--red)'};
+  if(crcl < 50) return {cls:'warn', txt:'พิจารณาลดขนาด', color:'var(--amber)'};
+  return {cls:'ok', txt:'ปกติ', color:'var(--green)'};
+}
+
+function overallStatus(p){
+  const crcl = calcCrCl(p);
+  const hb = Number(p.hasbled) || 0;
+  const overdue = daysUntil(p.nextLabDate);
+  if((crcl !== null && crcl < 30) || p.bleedEvent === 'มี - รุนแรง' || (overdue !== null && overdue < -14)){
+    return 'วิกฤต';
+  }
+  if((crcl !== null && crcl < 50) || hb >= 3 || p.bleedEvent === 'มี - เล็กน้อย' || (overdue !== null && overdue < 0) || p.adherence !== 'สม่ำเสมอ'){
+    return 'เฝ้าระวัง';
+  }
+  return 'ปกติ';
+}
+
+function statusBadgeClass(status){
+  if(status === 'วิกฤต') return 'danger';
+  if(status === 'เฝ้าระวัง') return 'warn';
+  return 'ok';
+}
+
+const STORAGE_AVAILABLE = typeof window.storage !== 'undefined';
+
+async function loadPatients(){
+  if(STORAGE_AVAILABLE){
+    try{
+      const result = await window.storage.get('dabi-patients', false);
+      if(result && result.value){
+        const parsed = JSON.parse(result.value);
+        if(Array.isArray(parsed) && parsed.length > 0){
+          patients = parsed;
+          return true;
+        }
+      }
+    }catch(e){}
+  }
+  patients = [];
+  return false;
+}
+
+async function savePatients(){
+  if(!STORAGE_AVAILABLE) return;
+  try{
+    await window.storage.set('dabi-patients', JSON.stringify(patients), false);
+  }catch(e){
+    console.error('บันทึกข้อมูลไม่สำเร็จ', e);
+  }
+}
+
+function renderStats(){
+  const total = patients.length;
+  const highRisk = patients.filter(p => {
+    const c = calcCrCl(p);
+    return (c !== null && c < 30) || (Number(p.hasbled)||0) >= 3;
+  }).length;
+  const overdueLab = patients.filter(p => { const d = daysUntil(p.nextLabDate); return d !== null && d < 0; }).length;
+  const bleedEvents = patients.filter(p => p.bleedEvent && p.bleedEvent !== 'ไม่มี').length;
+
+  document.getElementById('stat-grid').innerHTML = `
+    <div class="stat">
+      <div class="label">ผู้ป่วยทั้งหมดในระบบ</div>
+      <div class="value teal">${total}</div>
+      <div class="sub">รายที่กำลังใช้ยา Dabigatran</div>
+    </div>
+    <div class="stat">
+      <div class="label">กลุ่มเสี่ยงสูง</div>
+      <div class="value red">${highRisk}</div>
+      <div class="sub">CrCl &lt; 30 mL/min หรือ HAS-BLED ≥ 3</div>
+    </div>
+    <div class="stat">
+      <div class="label">เลยกำหนดนัด Lab</div>
+      <div class="value amber">${overdueLab}</div>
+      <div class="sub">เทียบกับวันที่ ${today.toLocaleDateString('th-TH')}</div>
+    </div>
+    <div class="stat">
+      <div class="label">มีประวัติเลือดออก</div>
+      <div class="value amber">${bleedEvents}</div>
+      <div class="sub">สะสมทั้งหมดในระบบ</div>
+    </div>
+  `;
+}
+
+function renderAlerts(){
+  const list = document.getElementById('alert-list');
+  const alerts = [];
+  patients.forEach(p => {
+    const crcl = calcCrCl(p);
+    const overdue = daysUntil(p.nextLabDate);
+    if(crcl !== null && crcl < 30){
+      alerts.push({level:'red', text:`${p.name} — CrCl ${crcl} mL/min ต่ำกว่าเกณฑ์ ควรทบทวนการใช้ยา`, tag:'CrCl ต่ำ'});
+    }
+    if(overdue !== null && overdue < 0){
+      alerts.push({level:'amber', text:`${p.name} — เลยกำหนดนัด Lab มาแล้ว ${Math.abs(overdue)} วัน`, tag:'เลยนัด'});
+    }
+    if(p.bleedEvent === 'มี - รุนแรง'){
+      alerts.push({level:'red', text:`${p.name} — มีประวัติเลือดออกรุนแรง`, tag:'เลือดออก'});
+    }
+  });
+  if(alerts.length === 0){
+    list.innerHTML = '<div class="no-alert">ไม่พบรายการที่ต้องเฝ้าระวังในขณะนี้</div>';
+    return;
+  }
+  list.innerHTML = alerts.map(a => `
+    <div class="alert-row ${a.level === 'amber' ? 'amber' : ''}">
+      <span>${a.text}</span>
+      <span class="tag">${a.tag}</span>
+    </div>
+  `).join('');
+}
+
+function renderTable(){
+  const search = document.getElementById('search').value.trim().toLowerCase();
+  const statusFilter = document.getElementById('filter-status').value;
+  const indFilter = document.getElementById('filter-indication').value;
+
+  let rows = patients.filter(p => {
+    const matchSearch = !search || (p.hn||'').toLowerCase().includes(search) || (p.name||'').toLowerCase().includes(search);
+    const status = overallStatus(p);
+    const matchStatus = statusFilter === 'all' || status === statusFilter;
+    const matchInd = indFilter === 'all' || p.indication === indFilter;
+    return matchSearch && matchStatus && matchInd;
+  });
+
+  const tbody = document.getElementById('table-body');
+  document.getElementById('empty-state').style.display = rows.length === 0 ? 'block' : 'none';
+
+  tbody.innerHTML = rows.map(p => {
+    const crcl = calcCrCl(p);
+    const cb = crclBadge(crcl);
+    const status = overallStatus(p);
+    const barPct = crcl === null ? 0 : Math.min(100, (crcl/100)*100);
+    return `
+      <tr>
+        <td><div class="pname">${p.name}</div><div class="phn">${p.hn}</div></td>
+        <td class="num">${p.age} ปี / ${p.sex}</td>
+        <td>${p.indication}</td>
+        <td>${p.comorbid || '-'}</td>
+        <td class="num">${p.scr ?? '-'}</td>
+        <td>
+          <div class="crcl-wrap">
+            <div class="crcl-bar"><div style="width:${barPct}%; background:${cb.color};"></div></div>
+            <span class="crcl-val">${crcl === null ? '-' : crcl}</span>
+          </div>
+          <span class="badge ${cb.cls}" style="margin-top:4px; display:inline-block;">${cb.txt}</span>
+        </td>
+        <td>${p.dose}</td>
+        <td>${p.interacting || 'ไม่มี'}</td>
+        <td class="num">${p.hasbled ?? '-'}</td>
+        <td class="num">${formatThaiDate(p.nextLabDate)}</td>
+        <td><span class="badge ${statusBadgeClass(status)}">${status}</span></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+let chartStatus, chartCrcl, chartDose;
+const CHART_TEXT = '#9AB0AC';
+const CHART_GRID = '#223640';
+const CHARTS_AVAILABLE = typeof Chart !== 'undefined';
+if(CHARTS_AVAILABLE){
+  Chart.defaults.font.family = "'IBM Plex Sans Thai', sans-serif";
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = CHART_TEXT;
+}
+
+function renderCharts(){
+  if(!CHARTS_AVAILABLE) return;
+  const statusCounts = {'ปกติ':0, 'เฝ้าระวัง':0, 'วิกฤต':0};
+  patients.forEach(p => statusCounts[overallStatus(p)]++);
+
+  const crclBuckets = {'<15':0, '15-29':0, '30-49':0, '50-79':0, '80+':0};
+  patients.forEach(p => {
+    const c = calcCrCl(p);
+    if(c === null) return;
+    if(c < 15) crclBuckets['<15']++;
+    else if(c < 30) crclBuckets['15-29']++;
+    else if(c < 50) crclBuckets['30-49']++;
+    else if(c < 80) crclBuckets['50-79']++;
+    else crclBuckets['80+']++;
+  });
+
+  const doseCounts = {};
+  patients.forEach(p => { doseCounts[p.dose] = (doseCounts[p.dose]||0) + 1; });
+
+  const ctxStatus = document.getElementById('chart-status');
+  const ctxCrcl = document.getElementById('chart-crcl');
+  const ctxDose = document.getElementById('chart-dose');
+
+  if(chartStatus) chartStatus.destroy();
+  if(chartCrcl) chartCrcl.destroy();
+  if(chartDose) chartDose.destroy();
+
+  chartStatus = new Chart(ctxStatus, {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(statusCounts),
+      datasets: [{
+        data: Object.values(statusCounts),
+        backgroundColor: ['#6FBF73', '#E8A33D', '#E2604F'],
+        borderColor: '#182A33',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 10 } } }
+    }
+  });
+
+  chartCrcl = new Chart(ctxCrcl, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(crclBuckets),
+      datasets: [{
+        data: Object.values(crclBuckets),
+        backgroundColor: '#3FBDA3',
+        borderRadius: 4,
+        maxBarThickness: 34,
+      }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: CHART_TEXT } },
+        y: { beginAtZero: true, ticks: { stepSize: 1, color: CHART_TEXT }, grid: { color: CHART_GRID } }
+      }
+    }
+  });
+
+  chartDose = new Chart(ctxDose, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(doseCounts),
+      datasets: [{
+        data: Object.values(doseCounts),
+        backgroundColor: ['#3FBDA3', '#E8A33D'],
+        borderRadius: 4,
+        maxBarThickness: 34,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { beginAtZero: true, ticks: { stepSize: 1, color: CHART_TEXT }, grid: { color: CHART_GRID } },
+        y: { grid: { display: false }, ticks: { color: CHART_TEXT } }
+      }
+    }
+  });
+}
+
+function renderAll(){
+  renderStats();
+  renderCharts();
+  renderAlerts();
+  renderTable();
+  document.getElementById('last-updated').textContent = 'อัปเดตล่าสุด ' + today.toLocaleDateString('th-TH', {year:'numeric', month:'long', day:'numeric'});
+}
+
+function showDashboard(){
+  document.getElementById('upload-gate').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('conn-dot').classList.remove('off');
+  document.getElementById('conn-text').textContent = 'มีข้อมูลในระบบ';
+}
+
+function showGate(){
+  document.getElementById('upload-gate').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('conn-dot').classList.add('off');
+  document.getElementById('conn-text').textContent = 'รอการอัปโหลดข้อมูล';
+}
+
+/* ---------- File parsing (CSV + XLSX) ---------- */
+
+function parseCSV(text){
+  const rows = [];
+  let row = [], field = '', inQuotes = false;
+  text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  for(let i = 0; i < text.length; i++){
+    const c = text[i];
+    if(inQuotes){
+      if(c === '"'){
+        if(text[i+1] === '"'){ field += '"'; i++; }
+        else inQuotes = false;
+      } else field += c;
+    } else {
+      if(c === '"') inQuotes = true;
+      else if(c === ','){ row.push(field); field = ''; }
+      else if(c === '\n'){ row.push(field); rows.push(row); row = []; field = ''; }
+      else field += c;
+    }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows.filter(r => r.some(c => c.trim() !== ''));
+}
+
+function buildHeaderMap(headerRow){
+  const norm = s => String(s ?? '').trim().toLowerCase();
+  const map = {};
+  headerRow.forEach((h, idx) => {
+    const hn = norm(h);
+    const match = FIELDS.find(f => norm(f.key) === hn || norm(f.label) === hn || norm(f.label).includes(hn));
+    if(match) map[idx] = match.key;
+  });
+  return map;
+}
+
+async function fileToRows(file){
+  const name = file.name.toLowerCase();
+  if(name.endsWith('.csv')){
+    const text = await file.text();
+    return parseCSV(text);
+  }
+  if(name.endsWith('.xlsx') || name.endsWith('.xls')){
+    if(typeof XLSX === 'undefined'){
+      throw new Error('ไม่สามารถโหลดตัวอ่านไฟล์ Excel ได้ กรุณาลองใหม่ หรือใช้ไฟล์ .csv แทน');
+    }
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, {type:'array', cellDates:true});
+    const sheet = wb.Sheets[wb.SheetNames[0]];
+    let rows = XLSX.utils.sheet_to_json(sheet, {header:1, defval:'', raw:false, dateNF:'yyyy-mm-dd'});
+    rows = rows.map(r => r.map(c => (c instanceof Date) ? c.toISOString().slice(0,10) : String(c)));
+    return rows.filter(r => r.some(c => c.trim() !== ''));
+  }
+  throw new Error('รองรับเฉพาะไฟล์ .csv, .xlsx หรือ .xls เท่านั้น');
+}
+
+const DATE_FIELDS = new Set(['startDate', 'lastLabDate', 'nextLabDate']);
+
+// Converts an Excel date serial number (days since 1899-12-30) to an ISO yyyy-mm-dd string.
+function excelSerialToISODate(serial){
+  const utcDays = Math.floor(serial - 25569);
+  const utcMs = utcDays * 86400 * 1000;
+  const date = new Date(utcMs);
+  const yyyy = date.getUTCFullYear();
+  const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(date.getUTCDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+function normalizeDateValue(value){
+  const v = String(value ?? '').trim();
+  if(!v) return v;
+  // Already a proper ISO date (yyyy-mm-dd) - leave untouched
+  if(/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  // A bare number means the source file stored an Excel date serial number
+  // (e.g. cells not formatted as dates in the spreadsheet) - convert it directly,
+  // without depending on any library, so it never gets misread as a literal year.
+  if(/^\d{4,6}(\.\d+)?$/.test(v)){
+    return excelSerialToISODate(Number(v));
+  }
+  return v;
+}
+
+async function importFile(file, {replaceAll=false} = {}){
+  const rows = await fileToRows(file);
+  if(rows.length < 2){
+    throw new Error('ไม่พบข้อมูลในไฟล์ หรือไฟล์ไม่มีแถวข้อมูล');
+  }
+  const headerMap = buildHeaderMap(rows[0]);
+  if(Object.keys(headerMap).length === 0){
+    throw new Error('ไม่พบคอลัมน์ที่ตรงกับฟิลด์ในระบบ กรุณาตรวจสอบหัวตารางในไฟล์ (เช่น hn, name, age, scr, dose ฯลฯ)');
+  }
+  if(replaceAll) patients = [];
+  let added = 0, updated = 0;
+  for(let r = 1; r < rows.length; r++){
+    const cells = rows[r];
+    const rec = {};
+    Object.entries(headerMap).forEach(([idx, key]) => {
+      let val = String(cells[idx] ?? '').trim();
+      if(DATE_FIELDS.has(key)) val = normalizeDateValue(val);
+      rec[key] = val;
+    });
+    if(!rec.hn) continue;
+    const existingIdx = patients.findIndex(p => p.hn === rec.hn);
+    if(existingIdx >= 0){
+      patients[existingIdx] = {...patients[existingIdx], ...rec};
+      updated++;
+    } else {
+      patients.push({...rec, id: uid()});
+      added++;
+    }
+  }
+  await savePatients();
+  return {added, updated};
+}
+
+/* ---------- Upload gate wiring ---------- */
+
+const gateInput = document.getElementById('gate-file-input');
+const gateDropzone = document.getElementById('upload-dropzone');
+const gateFilename = document.getElementById('upload-filename');
+const gateError = document.getElementById('upload-error');
+
+gateDropzone.addEventListener('click', () => gateInput.click());
+gateDropzone.addEventListener('dragover', e => { e.preventDefault(); gateDropzone.classList.add('drag'); });
+gateDropzone.addEventListener('dragleave', () => gateDropzone.classList.remove('drag'));
+gateDropzone.addEventListener('drop', e => {
+  e.preventDefault();
+  gateDropzone.classList.remove('drag');
+  if(e.dataTransfer.files[0]) handleGateFile(e.dataTransfer.files[0]);
+});
+gateInput.addEventListener('change', e => {
+  if(e.target.files[0]) handleGateFile(e.target.files[0]);
+  e.target.value = '';
+});
+
+async function handleGateFile(file){
+  gateError.textContent = '';
+  gateFilename.textContent = `กำลังประมวลผล: ${file.name} ...`;
+  try{
+    const {added, updated} = await importFile(file, {replaceAll:true});
+    gateFilename.textContent = `นำเข้าสำเร็จ: ${file.name} (${added} ราย)`;
+    renderAll();
+    showDashboard();
+  }catch(err){
+    gateFilename.textContent = '';
+    gateError.textContent = err.message || 'เกิดข้อผิดพลาดในการประมวลผลไฟล์';
+  }
+}
+
+/* ---------- In-dashboard import / re-upload ---------- */
+
+document.getElementById('btn-import').addEventListener('click', () => document.getElementById('csv-input').click());
+document.getElementById('csv-input').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if(!file) return;
+  try{
+    const {added, updated} = await importFile(file, {replaceAll:false});
+    renderAll();
+    alert(`นำเข้าสำเร็จ — เพิ่มใหม่ ${added} ราย, อัปเดตข้อมูลเดิม ${updated} ราย`);
+  }catch(err){
+    alert(err.message || 'เกิดข้อผิดพลาดในการประมวลผลไฟล์');
+  }
+});
+
+document.getElementById('btn-reupload').addEventListener('click', () => {
+  if(!confirm('การอัปโหลดไฟล์ใหม่ทั้งหมดจะลบข้อมูลผู้ป่วยปัจจุบันทั้งหมด และแทนที่ด้วยข้อมูลจากไฟล์ที่เลือก ยืนยันหรือไม่?')) return;
+  showGate();
+  gateFilename.textContent = '';
+  gateError.textContent = '';
+});
+
+document.getElementById('search').addEventListener('input', renderTable);
+document.getElementById('filter-status').addEventListener('change', renderTable);
+document.getElementById('filter-indication').addEventListener('change', renderTable);
+
+(async function init(){
+  const hasData = await loadPatients();
+  if(hasData){
+    renderAll();
+    showDashboard();
+  } else {
+    showGate();
+  }
+})();
+</script>
+</body>
+</html>
