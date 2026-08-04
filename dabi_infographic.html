@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Dabigatran Patient Monitoring - รพ.ร้อยเอ็ด</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EFF5F4;
+    --ink:#173634;
+    --old:#4A6FA5;       /* กลุ่มเดิม - slate blue */
+    --old-soft:#DCE6F1;
+    --new:#1C8A6E;        /* กลุ่มใหม่ - teal green */
+    --new-soft:#D8EFE7;
+    --gold:#E0A83D;       /* signature accent */
+    --card:#FFFFFF;
+    --line:#E1E9E7;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 92% -10%, #CFE7DE 0%, transparent 45%),
+      radial-gradient(circle at -5% 105%, #DCE6F1 0%, transparent 40%),
+      var(--bg);
+    font-family:'Sarabun',sans-serif;
+    color:var(--ink);
+    width:1600px;
+    height:900px;
+    padding:34px 46px 30px 46px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  /* header */
+  .header{display:flex; align-items:flex-end; justify-content:space-between;}
+  .eyebrow{
+    font-family:'Kanit'; font-weight:500; font-size:15px; letter-spacing:2px;
+    color:var(--new); text-transform:uppercase; margin-bottom:6px;
+  }
+  h1{
+    font-family:'Kanit'; font-weight:700; font-size:34px; margin:0; line-height:1.15;
+    color:var(--ink);
+  }
+  h1 span{color:var(--new);}
+  .subtitle{font-size:16px; color:#476460; margin-top:6px; font-weight:400;}
+  .legend{display:flex; gap:22px; align-items:center;}
+  .legend .item{display:flex; align-items:center; gap:9px; font-family:'Kanit'; font-weight:500; font-size:15px;}
+  .dot{width:16px;height:16px;border-radius:6px;}
+  .dot.old{background:var(--old);}
+  .dot.new{background:var(--new);}
+
+  /* grid */
+  .grid{display:flex; flex-direction:row; gap:16px; flex:1; width:100%;}
+  .col1{flex:1.05 1.05 0; min-width:0; display:flex; flex-direction:column; gap:16px;}
+  .col2{flex:1.15 1.15 0; min-width:0; display:flex; flex-direction:column; gap:16px;}
+  .col3{flex:1 1 0; min-width:0;}
+  .card{
+    background:var(--card);
+    border-radius:28px;
+    padding:20px 22px;
+    box-shadow: 0 10px 26px -14px rgba(23,54,52,0.18);
+    border:1px solid var(--line);
+    display:flex; flex-direction:column;
+  }
+  .card h3{
+    font-family:'Kanit'; font-size:15px; font-weight:600; margin:0 0 12px 0;
+    display:flex; align-items:center; gap:8px; color:var(--ink);
+  }
+  .card h3::before{
+    content:""; width:9px; height:9px; border-radius:50%; background:var(--gold); flex:none;
+  }
+
+  /* gender card */
+  .gender-row{display:flex; gap:12px; margin-bottom:8px;}
+  .gender-box{
+    flex:1; border-radius:20px; padding:12px 14px; background:var(--old-soft);
+  }
+  .gender-box.new{background:var(--new-soft);}
+  .gender-box .label{font-family:'Kanit'; font-size:13px; font-weight:500; color:#425a75;}
+  .gender-box.new .label{color:#155e49;}
+  .gender-box .big{font-family:'Kanit'; font-size:26px; font-weight:700; margin-top:2px;}
+  .gender-mini{display:flex; justify-content:space-between; font-size:12px; margin-top:6px; color:#5a6f6c;}
+
+  /* stacked bar util */
+  .stack{display:flex; height:26px; border-radius:13px; overflow:hidden; width:100%;}
+  .stack .seg.old{background:var(--old);}
+  .stack .seg.new{background:var(--new);}
+  .row-label{display:flex; justify-content:space-between; font-size:12.5px; margin:8px 0 4px 0; color:#3d5250; font-weight:500;}
+
+  /* age distribution */
+  .age-block{margin-bottom:9px;}
+  .age-title{font-size:12.5px; font-weight:500; color:#3d5250; margin-bottom:4px;}
+  .age-bars{display:flex; align-items:center; gap:6px;}
+  .age-bars .track{flex:1; background:#EEF3F2; border-radius:8px; height:14px; position:relative; overflow:hidden;}
+  .age-bars .fill{height:100%; border-radius:8px;}
+  .age-bars .fill.old{background:var(--old);}
+  .age-bars .fill.new{background:var(--new);}
+  .age-bars .pct{font-size:11.5px; width:34px; text-align:right; color:#3d5250;}
+
+  /* comorbidity icons list */
+  .list-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .list-row .name{width:118px; font-size:13px; font-weight:500; color:#33473f; flex:none;}
+  .list-row .bars{flex:1; display:flex; flex-direction:column; gap:3px;}
+  .mini-track{background:#EEF3F2; border-radius:6px; height:9px; position:relative;}
+  .mini-fill{height:100%; border-radius:6px;}
+  .mini-fill.old{background:var(--old);}
+  .mini-fill.new{background:var(--new);}
+
+  /* indication pills */
+  .pill-row{display:flex; justify-content:space-between; align-items:center; padding:9px 4px; border-bottom:1px dashed var(--line);}
+  .pill-row:last-child{border-bottom:none;}
+  .pill-row .name{font-size:13.5px; font-weight:500; color:#33473f;}
+  .pill-row .vals{display:flex; gap:8px;}
+  .pill{font-family:'Kanit'; font-size:12.5px; font-weight:600; padding:4px 10px; border-radius:12px;}
+  .pill.old{background:var(--old-soft); color:#2f4c72;}
+  .pill.new{background:var(--new-soft); color:#0f5943;}
+
+  /* adherence donut-ish */
+  .adh-wrap{display:flex; gap:14px; margin-top:4px;}
+  .adh-col{flex:1; text-align:center; background:#F7FAF9; border-radius:20px; padding:12px 8px;}
+  .ring{
+    width:74px; height:74px; border-radius:50%; margin:0 auto 6px auto;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Kanit'; font-weight:700; font-size:15px; color:#fff;
+  }
+  .adh-col .cap{font-size:11.5px; color:#5a6f6c; margin-top:2px;}
+
+  /* signature footer band */
+  .signature{
+    border-radius:30px;
+    background: linear-gradient(120deg, #0F4B45 0%, #16665E 55%, #1C8A6E 100%);
+    color:#fff;
+    padding:20px 34px;
+    display:flex; align-items:center; gap:34px;
+    box-shadow: 0 14px 30px -16px rgba(15,75,69,0.5);
+  }
+  .signature .sig-text{flex:1;}
+  .signature .eyebrow2{font-family:'Kanit'; font-size:13px; letter-spacing:2px; color:#BEE9DC; text-transform:uppercase;}
+  .signature h2{font-family:'Kanit'; font-size:22px; font-weight:600; margin:4px 0 4px 0;}
+  .signature p{font-size:13.5px; color:#DCF2EA; margin:0; max-width:560px;}
+  .rings{display:flex; gap:26px;}
+  .big-ring{
+    position:relative; width:118px; height:118px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex:none;
+  }
+  .big-ring .center{
+    width:88px; height:88px; border-radius:50%; background:#0F4B45;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .big-ring .center .num{font-family:'Kanit'; font-weight:700; font-size:22px; color:#fff;}
+  .big-ring .center .txt{font-size:10px; color:#BEE9DC;}
+  .ring-cap{position:absolute; bottom:-22px; left:0; right:0; text-align:center; font-family:'Kanit'; font-size:12px; font-weight:500; color:#DCF2EA;}
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div>
+      <div class="eyebrow">งานประชุมวิชาการเภสัชกรรมคลินิก · โรงพยาบาลร้อยเอ็ด</div>
+      <h1>ข้อมูลทั่วไปของผู้ป่วยที่ได้รับยา <span>Dabigatran</span></h1>
+      <div class="subtitle">เปรียบเทียบกลุ่มเดิมและกลุ่มใหม่ ภายใต้ระบบติดตามผู้ป่วยที่พัฒนาขึ้น (กลุ่มละ 30 ราย)</div>
+    </div>
+    <div class="legend">
+      <div class="item"><span class="dot old"></span>กลุ่มเดิม</div>
+      <div class="item"><span class="dot new"></span>กลุ่มใหม่</div>
+    </div>
+  </div>
+
+  <div class="grid">
+
+    <!-- Column 1 -->
+    <div class="col1">
+
+      <div class="card">
+        <h3>เพศและประวัติการเพิกเฉยต่อการรับประทานยา</h3>
+        <div class="gender-row">
+          <div class="gender-box">
+            <div class="label">กลุ่มเดิม</div>
+            <div class="big">70 : 30</div>
+            <div class="gender-mini"><span>ชาย</span><span>หญิง</span></div>
+          </div>
+          <div class="gender-box new">
+            <div class="label">กลุ่มใหม่</div>
+            <div class="big">63.3 : 36.7</div>
+            <div class="gender-mini"><span>ชาย</span><span>หญิง</span></div>
+          </div>
+        </div>
+
+        <div class="adh-wrap">
+          <div class="adh-col">
+            <div class="ring" style="background:var(--old);">83.3%</div>
+            <div class="cap">กลุ่มเดิม<br>ไม่เพิกเฉยต่อการใช้ยา</div>
+          </div>
+          <div class="adh-col">
+            <div class="ring" style="background:var(--new);">100%</div>
+            <div class="cap">กลุ่มใหม่<br>ไม่เพิกเฉยต่อการใช้ยา</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="flex:1;">
+        <h3>eGFR (mL/min/1.73 m²)</h3>
+        <div class="age-block">
+          <div class="age-title">30–59</div>
+          <div class="age-bars">
+            <div class="track"><div class="fill old" style="width:50%;"></div></div>
+            <div class="pct">50%</div>
+          </div>
+          <div class="age-bars">
+            <div class="track"><div class="fill new" style="width:26.7%;"></div></div>
+            <div class="pct">26.7%</div>
+          </div>
+        </div>
+        <div class="age-block">
+          <div class="age-title">60–89</div>
+          <div class="age-bars">
+            <div class="track"><div class="fill old" style="width:40%;"></div></div>
+            <div class="pct">40%</div>
+          </div>
+          <div class="age-bars">
+            <div class="track"><div class="fill new" style="width:50%;"></div></div>
+            <div class="pct">50%</div>
+          </div>
+        </div>
+        <div class="age-block">
+          <div class="age-title">&gt;90</div>
+          <div class="age-bars">
+            <div class="track"><div class="fill old" style="width:10%;"></div></div>
+            <div class="pct">10%</div>
+          </div>
+          <div class="age-bars">
+            <div class="track"><div class="fill new" style="width:23.3%;"></div></div>
+            <div class="pct">23.3%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Column 2 -->
+    <div class="col2">
+
+      <div class="card" style="flex:1;">
+        <h3>ช่วงอายุ (ปี)</h3>
+        <div class="age-block">
+          <div class="age-title">41–50</div>
+          <div class="age-bars"><div class="track"><div class="fill old" style="width:3.3%;"></div></div><div class="pct">3.3%</div></div>
+          <div class="age-bars"><div class="track"><div class="fill new" style="width:0%;"></div></div><div class="pct">0%</div></div>
+        </div>
+        <div class="age-block">
+          <div class="age-title">51–60</div>
+          <div class="age-bars"><div class="track"><div class="fill old" style="width:16.7%;"></div></div><div class="pct">16.7%</div></div>
+          <div class="age-bars"><div class="track"><div class="fill new" style="width:10%;"></div></div><div class="pct">10%</div></div>
+        </div>
+        <div class="age-block">
+          <div class="age-title">61–70</div>
+          <div class="age-bars"><div class="track"><div class="fill old" style="width:23.3%;"></div></div><div class="pct">23.3%</div></div>
+          <div class="age-bars"><div class="track"><div class="fill new" style="width:53.3%;"></div></div><div class="pct">53.3%</div></div>
+        </div>
+        <div class="age-block">
+          <div class="age-title">71–80</div>
+          <div class="age-bars"><div class="track"><div class="fill old" style="width:43.3%;"></div></div><div class="pct">43.3%</div></div>
+          <div class="age-bars"><div class="track"><div class="fill new" style="width:36.7%;"></div></div><div class="pct">36.7%</div></div>
+        </div>
+        <div class="age-block">
+          <div class="age-title">&gt;80</div>
+          <div class="age-bars"><div class="track"><div class="fill old" style="width:13.3%;"></div></div><div class="pct">13.3%</div></div>
+          <div class="age-bars"><div class="track"><div class="fill new" style="width:0%;"></div></div><div class="pct">0%</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Column 3 -->
+    <div class="card col3">
+      <h3>โรคประจำตัวอื่น ๆ</h3>
+      <div class="age-block">
+        <div class="age-title">เบาหวาน</div>
+        <div class="age-bars"><div class="track"><div class="fill old" style="width:20%;"></div></div><div class="pct">20%</div></div>
+        <div class="age-bars"><div class="track"><div class="fill new" style="width:10%;"></div></div><div class="pct">10%</div></div>
+      </div>
+      <div class="age-block">
+        <div class="age-title">ความดันโลหิตสูง</div>
+        <div class="age-bars"><div class="track"><div class="fill old" style="width:23.3%;"></div></div><div class="pct">23.3%</div></div>
+        <div class="age-bars"><div class="track"><div class="fill new" style="width:43.3%;"></div></div><div class="pct">43.3%</div></div>
+      </div>
+      <div class="age-block">
+        <div class="age-title">หัวใจและหลอดเลือด</div>
+        <div class="age-bars"><div class="track"><div class="fill old" style="width:13.3%;"></div></div><div class="pct">13.3%</div></div>
+        <div class="age-bars"><div class="track"><div class="fill new" style="width:20%;"></div></div><div class="pct">20%</div></div>
+      </div>
+      <div class="age-block">
+        <div class="age-title">หลอดเลือดสมอง</div>
+        <div class="age-bars"><div class="track"><div class="fill old" style="width:13.3%;"></div></div><div class="pct">13.3%</div></div>
+        <div class="age-bars"><div class="track"><div class="fill new" style="width:3.3%;"></div></div><div class="pct">3.3%</div></div>
+      </div>
+      <div class="age-block">
+        <div class="age-title">Atrial Fibrillation</div>
+        <div class="age-bars"><div class="track"><div class="fill old" style="width:30%;"></div></div><div class="pct">30%</div></div>
+        <div class="age-bars"><div class="track"><div class="fill new" style="width:23.3%;"></div></div><div class="pct">23.3%</div></div>
+      </div>
+
+      <div style="border-top:1px dashed var(--line); margin:10px 0 12px 0;"></div>
+
+      <h3>ข้อบ่งชี้การใช้ยา</h3>
+      <div class="pill-row">
+        <div class="name">Stroke prevention</div>
+        <div class="vals"><span class="pill old">58.7%</span><span class="pill new">58.7%</span></div>
+      </div>
+      <div class="pill-row">
+        <div class="name">AF post PCI with stent</div>
+        <div class="vals"><span class="pill old">43.3%</span><span class="pill new">43.3%</span></div>
+      </div>
+      <div class="pill-row">
+        <div class="name">VTE prevention</div>
+        <div class="vals"><span class="pill old">–</span><span class="pill new">–</span></div>
+      </div>
+
+     <!-- <div style="font-size:12.5px; color:#5a6f6c; line-height:1.7; margin-top:12px;">
+        กลุ่มใหม่มีสัดส่วนผู้ป่วยอายุ 61–70 ปีและโรคความดันโลหิตสูงมากกว่ากลุ่มเดิม สะท้อนความซับซ้อนทางคลินิกที่ระบบติดตามต้องรองรับ ขณะที่ความสม่ำเสมอในการใช้ยาของกลุ่มใหม่ดีขึ้นอย่างชัดเจน
+      </div> -->
+    </div>
+
+  </div>
+
+  <!-- Signature band: dosing standardization -->
+  <div class="signature">
+    <div class="sig-text">
+      <div class="eyebrow2"></div>
+      <h2>ขนาดยาที่ได้รับ: มาตรฐานเดียวกันทั้งกลุ่ม</h2>
+      <p>หลังนำระบบติดตามผู้ป่วยมาใช้ ผู้ป่วยกลุ่มใหม่ทุกรายได้รับยาขนาด 110 mg bid ตามแนวทางมาตรฐาน เทียบกับกลุ่มเดิมที่ยังพบการสั่งขนาดยาไม่เป็นมาตรฐาน (110 mg od 3.3% และ 110 mg 2 tab od 3.3%)</p>
+    </div>
+    <div class="rings">
+      <div class="big-ring" style="background: conic-gradient(var(--old) 0% 93.3%, rgba(255,255,255,0.25) 93.3% 100%);">
+        <div class="center"><div class="num">93.3%</div><div class="txt">110mg bid</div></div>
+        <div class="ring-cap">กลุ่มเดิม</div>
+      </div>
+      <div class="big-ring" style="background: conic-gradient(var(--gold) 0% 100%);">
+        <div class="center"><div class="num">100%</div><div class="txt">110mg bid</div></div>
+        <div class="ring-cap">กลุ่มใหม่</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
