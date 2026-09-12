@@ -229,7 +229,7 @@
 
     <div class="qr-section" id="qrSection">
       <div class="paid-amount" id="paidAmount">฿0.00</div>
-      <div class="paid-to">วชิระเภสัช</div>
+      <div class="paid-to">ห้างวชิระเภสัช</div>
       <div id="qrcode"></div>
       <div class="promptpay-tag">PromptPay</div>
     </div>
@@ -261,7 +261,7 @@
 
   function buildPromptPayPayload(amount) {
     let merchantInfo = '';
-    merchantInfo += field('00', 'A000000677010112'); // PromptPay AID
+    merchantInfo += field('00', 'A000000677010111'); // PromptPay AID
     merchantInfo += field('03', EWALLET_ID);          // e-Wallet ID
 
     let payload = '';
@@ -272,7 +272,7 @@
     payload += field('54', amount.toFixed(2)); // amount
     payload += field('58', 'TH');             // country
     payload += field('59', 'WACHIRA PHESAJ'); // merchant name
-    payload += field('60', 'BANGKOK');        // merchant city
+    payload += field('60', 'RoiEt');        // merchant city
 
     payload += '6304'; // CRC tag + length, value appended next
     payload += crc16(payload);
