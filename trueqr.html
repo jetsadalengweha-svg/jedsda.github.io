@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ฝู — สร้าง QR True Wallet พร้อมเพย์</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root{
+    --ink:#173229;
+    --paper:#F4F7F3;
+    --panel:#FFFFFF;
+    --green:#1F6F54;
+    --green-deep:#134A38;
+    --line:#D8E3DC;
+    --muted:#5C7268;
+  }
+  *{ box-sizing:border-box; }
+  html,body{
+    margin:0;
+    min-height:100%;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Sarabun', sans-serif;
+  }
+  body{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+  }
+
+  .stub{
+    width:100%;
+    max-width:400px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:14px;
+    padding:0 4px;
+  }
+  .brand h1{
+    font-family:'Prompt', sans-serif;
+    font-size:1.05rem;
+    font-weight:600;
+    margin:0;
+    color:var(--green-deep);
+  }
+  .brand span{
+    font-size:0.78rem;
+    color:var(--muted);
+  }
+
+  .card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    box-shadow:0 1px 2px rgba(23,50,41,0.06);
+    overflow:hidden;
+  }
+
+  .amount-section{
+    padding:28px 28px 22px;
+  }
+
+  .amount-label{
+    font-size:0.85rem;
+    color:var(--muted);
+    margin-bottom:10px;
+  }
+
+  .amount-row{
+    display:flex;
+    align-items:baseline;
+    border-bottom:2px solid var(--green);
+    padding-bottom:10px;
+  }
+  .amount-row .thb{
+    font-family:'Prompt', sans-serif;
+    font-weight:600;
+    font-size:1.15rem;
+    color:var(--green-deep);
+    margin-right:10px;
+  }
+  #amount{
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    font-family:'Prompt', sans-serif;
+    font-weight:600;
+    font-size:2.1rem;
+    color:var(--ink);
+    width:100%;
+    min-width:0;
+    -moz-appearance:textfield;
+  }
+  #amount::-webkit-outer-spin-button,
+  #amount::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+  }
+  #amount::placeholder{
+    color:#C3D0C9;
+  }
+
+  .hint{
+    font-size:0.76rem;
+    color:var(--muted);
+    margin-top:8px;
+  }
+
+  button#generate{
+    display:block;
+    width:100%;
+    border:none;
+    background:var(--green);
+    color:#fff;
+    font-family:'Prompt', sans-serif;
+    font-weight:600;
+    font-size:1rem;
+    padding:16px;
+    cursor:pointer;
+    transition:background 0.15s ease;
+  }
+  button#generate:hover{ background:var(--green-deep); }
+  button#generate:active{ background:var(--green-deep); }
+  button#generate:focus-visible{ outline:3px solid #96C2AF; outline-offset:-3px; }
+
+  .perforation{
+    position:relative;
+    height:0;
+    border-top:2px dashed var(--line);
+    margin:0 0;
+  }
+  .perforation::before,
+  .perforation::after{
+    content:"";
+    position:absolute;
+    top:-10px;
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    background:var(--paper);
+  }
+  .perforation::before{ left:-10px; }
+  .perforation::after{ right:-10px; }
+
+  .qr-section{
+    padding:28px;
+    text-align:center;
+    display:none;
+  }
+  .qr-section.show{ display:block; }
+
+  .qr-section .paid-amount{
+    font-family:'Prompt', sans-serif;
+    font-weight:600;
+    font-size:1.4rem;
+    color:var(--green-deep);
+    margin-bottom:4px;
+  }
+  .qr-section .paid-to{
+    font-size:0.85rem;
+    color:var(--muted);
+    margin-bottom:20px;
+  }
+
+  #qrcode{
+    display:inline-block;
+    line-height:0;
+    padding:12px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:4px;
+  }
+
+  .promptpay-tag{
+    margin-top:16px;
+    font-size:0.75rem;
+    letter-spacing:0.02em;
+    color:var(--muted);
+  }
+
+  .error{
+    color:#B3453B;
+    font-size:0.82rem;
+    margin-top:8px;
+    display:none;
+  }
+  .error.show{ display:block; }
+
+  footer{
+    text-align:center;
+    margin-top:16px;
+    font-size:0.72rem;
+    color:var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<div class="stub">
+  <div class="brand">
+    <h1>ฝู</h1>
+    <span>ชำระเงินด้วยทรูมันนี่ วอลเล็ท</span>
+  </div>
+
+  <div class="card">
+    <div class="amount-section">
+      <div class="amount-label">จำนวนเงิน (บาท)</div>
+      <div class="amount-row">
+        <span class="thb">฿</span>
+        <input type="number" id="amount" inputmode="numeric" placeholder="0" min="1" step="1">
+      </div>
+      <div class="hint">กรอกเป็นจำนวนเต็ม ระบบจะปัดเป็นทศนิยม .00 ให้อัตโนมัติ</div>
+      <div class="error" id="error">กรุณากรอกจำนวนเงินให้ถูกต้อง (มากกว่า 0)</div>
+    </div>
+
+    <button id="generate">สร้าง QR ทรูวอลเล็ท</button>
+
+    <div class="perforation"></div>
+
+    <div class="qr-section" id="qrSection">
+      <div class="paid-amount" id="paidAmount">฿0.00</div>
+      <div class="paid-to">ฝู</div>
+      <div id="qrcode"></div>
+      <div class="promptpay-tag">TrueMoney Wallet</div>
+    </div>
+  </div>
+
+  <footer>สแกนด้วยแอปธนาคารใดก็ได้ที่รองรับพร้อมเพย์</footer>
+</div>
+
+<script>
+  // ---- PromptPay / TrueMoney Wallet payload (EMVCo) ----
+  const TRUEWALLET_PHONE = '0812222222'; // ทรูวอลเล็ท: 081-2222222
+
+  // TrueMoney Wallet uses the PromptPay AID but encodes the target as
+  // "14" + phone number zero-padded to 13 digits (15 chars total).
+  const EWALLET_ID = '14' + TRUEWALLET_PHONE.padStart(13, '0');
+
+  function field(id, value) {
+    const len = value.length.toString().padStart(2, '0');
+    return id + len + value;
+  }
+
+  function crc16(str) {
+    let crc = 0xFFFF;
+    for (let i = 0; i < str.length; i++) {
+      crc ^= str.charCodeAt(i) << 8;
+      for (let j = 0; j < 8; j++) {
+        crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+        crc &= 0xFFFF;
+      }
+    }
+    return crc.toString(16).toUpperCase().padStart(4, '0');
+  }
+
+  function buildPromptPayPayload(amount) {
+    let merchantInfo = '';
+    merchantInfo += field('00', 'A000000677010111'); // PromptPay AID (tag 29 proxy ID)
+    merchantInfo += field('03', EWALLET_ID);          // e-Wallet ID
+
+    let payload = '';
+    payload += field('00', '01');            // payload format indicator
+    payload += field('01', '12');             // dynamic QR (has amount)
+    payload += field('29', merchantInfo);     // merchant account info
+    payload += field('53', '764');            // currency: THB
+    payload += field('54', amount.toFixed(2)); // amount
+    payload += field('58', 'TH');             // country
+    payload += field('59', 'WWW'); // merchant name
+    payload += field('60', 'BANGKOK');        // merchant city
+
+    payload += '6304'; // CRC tag + length, value appended next
+    payload += crc16(payload);
+    return payload;
+  }
+
+  // ---- UI wiring ----
+  const amountInput = document.getElementById('amount');
+  const errorEl = document.getElementById('error');
+  const qrSection = document.getElementById('qrSection');
+  const qrcodeEl = document.getElementById('qrcode');
+  const paidAmountEl = document.getElementById('paidAmount');
+  let qrInstance = null;
+
+  document.getElementById('generate').addEventListener('click', () => {
+    const raw = amountInput.value.trim();
+    const value = Math.floor(Number(raw));
+
+    if (!raw || isNaN(value) || value <= 0) {
+      errorEl.classList.add('show');
+      qrSection.classList.remove('show');
+      return;
+    }
+    errorEl.classList.remove('show');
+
+    const amount = value; // whole baht, formatted to .00 in payload/display
+    const payload = buildPromptPayPayload(amount);
+
+    qrcodeEl.innerHTML = '';
+    qrInstance = new QRCode(qrcodeEl, {
+      text: payload,
+      width: 220,
+      height: 220,
+      colorDark: '#173229',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+
+    paidAmountEl.textContent = '฿' + amount.toFixed(2);
+    qrSection.classList.add('show');
+  });
+
+  amountInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('generate').click();
+  });
+</script>
+
+</body>
+</html>
